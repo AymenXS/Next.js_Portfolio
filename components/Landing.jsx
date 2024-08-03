@@ -1,6 +1,7 @@
 import Section from '@/shared/Section';
 import { BentoGrid, BentoGridItem } from './ui/bento-grid';
-import { gridItems } from '@/data';
+import { gridItems, technologies } from '@/data';
+import Sphere from './Sphere';
 
 const Landing = () => {
   return (
@@ -17,7 +18,7 @@ const Landing = () => {
       </Section>
       <Section className="flex-col h-full border-4 border-red-400 p-2">
         <BentoGrid className="w-full border-2 border-blue-200 mx-auto">
-          {gridItems.map((item, index) => (
+          {gridItems.slice(0, 3).map((item, index) => (
             <BentoGridItem
               key={index}
               title={item.title}
@@ -28,6 +29,26 @@ const Landing = () => {
             />
           ))}
         </BentoGrid>
+      </Section>
+      <Section className="flex-col h-full border-4 border-red-400 p-2">
+        <BentoGrid className="w-full border-2 border-blue-200 mx-auto">
+          {gridItems.slice(3, 6).map((item, index) => (
+            <BentoGridItem
+              key={index}
+              title={item.title}
+              description={item.description}
+              header={item.header}
+              className={item.className}
+              icon={item.icon}
+            />
+          ))}
+        </BentoGrid>
+      </Section>
+      <Section className="flex-col h-full border-4 border-red-400 p-2">
+        <h1>Approach</h1>
+      </Section>
+      <Section className="flex-col h-full border-4 border-red-400 p-2">
+        <Sphere iconSlugs={technologies} />
       </Section>
     </>
   );

@@ -1,7 +1,14 @@
 import { IconClipboardCopy, IconFileBroken, IconSignature, IconTableColumn } from '@tabler/icons-react';
 
 const Skeleton = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl dark:bg-dot-white/[0.2] bg-dot-black/[0.2] [mask-image:radial-gradient(ellipse_at_center,white,transparent)] border border-transparent dark:border-white/[0.2] bg-neutral-100 dark:bg-black"></div>
+  // <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl dark:bg-dot-white/[0.2] bg-dot-black/[0.2] [mask-image:radial-gradient(ellipse_at_center,white,transparent)] border border-transparent dark:border-white/[0.2] bg-neutral-100 dark:bg-black">
+
+  // </div>
+  <img
+    src="https://images.unsplash.com/photo-1496449903678-68ddcb189a24?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt=""
+    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+  />
 );
 
 export const navItems = [
@@ -13,26 +20,80 @@ export const navItems = [
 
 export const gridItems = [
   {
-    title: 'The Dawn of Innovation',
+    title: 'Services',
     description: 'Explore the birth of groundbreaking ideas and inventions.',
     header: <Skeleton />,
     className: 'col-span-2 row-span-2 ',
     icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
   },
   {
-    title: 'The Digital Revolution',
+    title: '3+ years of experience',
     description: 'Dive into the transformative power of technology.',
     header: <Skeleton />,
     className: 'col-span-1 row-span-1',
     icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
   {
-    title: 'The Art of Design',
+    title: `I'm very flexible with time zone communications`,
     description: 'Discover the beauty of thoughtful and functional design.',
     header: <Skeleton />,
     className: 'col-span-1 row-span-1',
     icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
+  {
+    title: 'Specializations',
+    description: 'E-commerce | SaaS | Web Applications ',
+    header: <Skeleton />,
+    className: 'col-span-1 row-span-1',
+    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
+  },
+  {
+    title: 'The Inside Scoop',
+    description: 'Currently building a JS Animation library.',
+    header: <Skeleton />,
+    className: 'col-span-2 row-span-2 ',
+    icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
+  },
+  {
+    title: 'Number of Projects Built',
+    description: '70',
+    header: <Skeleton />,
+    className: 'col-span-1 row-span-1',
+    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
+  },
+];
+
+export const technologies = [
+  'typescript',
+  'javascript',
+  'dart',
+  'java',
+  'react',
+  'flutter',
+  'android',
+  'html5',
+  'css3',
+  'nodedotjs',
+  'express',
+  'nextdotjs',
+  'prisma',
+  'amazonaws',
+  'postgresql',
+  'firebase',
+  'nginx',
+  'vercel',
+  'testinglibrary',
+  'jest',
+  'cypress',
+  'docker',
+  'git',
+  'jira',
+  'github',
+  'gitlab',
+  'visualstudiocode',
+  'androidstudio',
+  'sonarqube',
+  'figma',
 ];
 
 export const projects = [
