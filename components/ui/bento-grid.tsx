@@ -1,7 +1,12 @@
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export const BentoGrid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
-  return <div className={cn('grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 mx-auto h-full', className)}>{children}</div>;
+  return (
+    <div className={cn('grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 mx-auto max-w-7xl w-full px-6 py-12 h-[90vh]', className)}>
+      {children}
+    </div>
+  );
 };
 
 export const BentoGridItem = ({
@@ -26,30 +31,41 @@ export const BentoGridItem = ({
   return (
     <div
       className={cn(
-        'rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-4 dark:bg-black dark:border-white/[0.2] bg-white border border-transparent flex flex-col space-y-4',
+        'rounded-3xl group/bento hover:shadow-2xl transition-all duration-300 shadow-lg dark:shadow-none p-6 md:p-8 dark:bg-black/50 bg-white/10 backdrop-blur-sm border border-white/10 flex flex-col justify-between relative overflow-hidden',
         className
       )}
       style={{
-        background: 'rgb(4,7,29)',
-        backgroundImage: 'linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)',
+        background: 'rgba(4,7,29,0.8)',
+        backgroundImage: 'linear-gradient(135deg, rgba(4,7,29,0.9) 0%, rgba(12,14,35,0.8) 100%)',
       }}
     >
-      <div className={`${id === 6 && 'flex justify-center'} h-full`}>
-        <div className="w-full h-full absolute">
-          {img && <img src={img} alt={title as string} className={cn(imgClassName, 'object-cover object-center')} />}
+      {img && (
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src={img}
+            alt={title as string}
+            layout="fill"
+            objectFit="cover"
+            className={cn(imgClassName, 'z-0 opacity-30 group-hover/bento:opacity-40 transition-opacity duration-300')}
+          />
         </div>
-        <div className={`absolute right-0 -bottom-5 ${id === 5 && 'w-full opacity-80'}`}>
-          {spareImg && <img src={spareImg} alt="Spare" className="object-cover object-center w-full h-full" />}
-        </div>
+      )}
+      {spareImg && (
         <div
-          className={cn(
-            titleClassName,
-            'group-hover/bento:translate-x-2 transition duration-200 relative md:h-full min-h-40 flex flex-col px-5 p-5 lg:p-10'
-          )}
+          className={`absolute right-0 bottom-0 ${
+            id === 5 ? 'w-3/4 opacity-50' : 'w-1/2 opacity-20'
+          } h-3/4 transition-all duration-300 group-hover/bento:scale-105`}
         >
-          <div className="font-sans text-lg lg:text-3xl max-w-96 font-bold z-10">{title}</div>
-          <div className="font-sans font-extralight md:max-w-32 md:text-xs lg:text-base text-sm text-[#C1C2D3] z-10">{description}</div>
+          <Image src={spareImg} alt="Spare" layout="fill" objectFit="contain" className="z-10" />
         </div>
+      )}
+      <div className={cn('relative z-20 h-full flex flex-col', titleClassName)}>
+        <h3 className="font-sans text-xl md:text-2xl lg:text-3xl font-bold text-white mb-3 group-hover/bento:translate-x-1 transition-transform duration-300">
+          {title}
+        </h3>
+        <p className="font-sans font-light text-sm md:text-base lg:text-lg text-gray-300 mt-2 group-hover/bento:translate-y-1 transition-transform duration-300 line-clamp-4 md:line-clamp-none">
+          {description}
+        </p>
       </div>
     </div>
   );

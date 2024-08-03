@@ -6,10 +6,10 @@ const BentoGridLeft = () => {
   return (
     <Section className="flex-col h-full">
       <BentoGrid className="w-full mx-auto">
-        {gridItems.slice(0, 3).map((item) => (
+        {gridItems.slice(0, 3).map((item, index) => (
           <BentoGridItem
-            key={item.id}
-            id={item.id}
+            key={index}
+            id={index + 1}
             title={item.title}
             description={item.description}
             className={item.className}

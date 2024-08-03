@@ -1,16 +1,12 @@
 import { IconClipboardCopy, IconFileBroken, IconSignature, IconTableColumn } from '@tabler/icons-react';
 
 const Skeleton = () => (
-  // <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl dark:bg-dot-white/[0.2] bg-dot-black/[0.2] [mask-image:radial-gradient(ellipse_at_center,white,transparent)] border border-transparent dark:border-white/[0.2] bg-neutral-100 dark:bg-black">
-
-  // </div>
   <img
     src="https://images.unsplash.com/photo-1496449903678-68ddcb189a24?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     alt=""
     style={{ objectFit: 'cover', width: '100%', height: '100%' }}
   />
 );
-// data.js or data.ts
 
 export const navItems = [
   { name: 'About', link: '#about' },
@@ -21,35 +17,65 @@ export const navItems = [
 
 export const gridItems = [
   {
+    id: 1,
     title: 'Services',
     description:
       'Web Development | Responsive Design | User Experience (UX) | Cross-Browser Compatibility | Performance Optimization | Front-End Frameworks | Integration with Back End | Testing and Debugging',
     className: 'col-span-2 row-span-2',
+    img: '/b1.svg',
+    imgClassName: 'w-full h-full',
+    titleClassName: 'justify-end',
+    spareImg: '',
   },
   {
+    id: 2,
     title: '3+ years of experience',
     description: 'Extensive experience in web development and related technologies.',
     className: 'col-span-1 row-span-1',
+    img: '',
+    imgClassName: '',
+    titleClassName: 'justify-start',
+    spareImg: '',
   },
   {
+    id: 3,
     title: `I'm very flexible with time zone communications`,
     description: 'Available for collaboration across different time zones.',
     className: 'col-span-1 row-span-1',
+    img: '',
+    imgClassName: '',
+    titleClassName: 'justify-center',
+    spareImg: '',
   },
   {
+    id: 4,
     title: 'Specializations',
     description: 'E-commerce | SaaS | Web Applications',
     className: 'col-span-1 row-span-1',
+    img: '/grid.svg',
+    imgClassName: '',
+    titleClassName: 'justify-start',
+    spareImg: '/b4.svg',
   },
   {
+    id: 5,
     title: 'The Inside Scoop',
     description: 'Currently building a JS Animation library.',
     className: 'col-span-2 row-span-2',
+    img: '/b5.svg',
+    imgClassName: 'absolute right-0 bottom-0 md:w-96 w-60',
+    titleClassName: 'justify-center md:justify-start lg:justify-center',
+    spareImg: '/grid.svg',
   },
   {
+    id: 6,
     title: 'Number of Projects Built',
     description: '70',
     className: 'col-span-1 row-span-1',
+    img: '',
+    imgClassName: '',
+    titleClassName: 'justify-center md:max-w-full max-w-60 text-center',
+    spareImg: '',
   },
 ];
 
