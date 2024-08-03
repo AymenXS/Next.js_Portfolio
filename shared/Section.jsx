@@ -1,12 +1,17 @@
-// components/Section.jsx
-export default function Section({ children, bgColor, isActive = false }) {
+import { cn } from '@/lib/utils'; // Assuming you have a utils file with cn function
+
+export default function Section({ className, children, bgColor, isActive = false }) {
   return (
-    <div
-      className={`section absolute inset-0 ${bgColor} flex items-center justify-center ${
-        isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
-      }`}
+    <section
+      className={cn(
+        'section absolute inset-0 h-full w-full',
+        bgColor,
+        'flex items-center justify-center',
+        isActive ? 'opacity-100' : 'opacity-0 pointer-events-none',
+        className
+      )}
     >
-      <h1 className="text-4xl">{children}</h1>
-    </div>
+      {children}
+    </section>
   );
 }
