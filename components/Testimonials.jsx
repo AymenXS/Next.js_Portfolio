@@ -1,12 +1,37 @@
+import React from 'react';
+import { companies, testimonials } from '@/data';
+import { InfiniteMovingCards } from './ui/infinite-moving-cards';
+import Section from '@/shared/Section';
+
 const Testimonials = () => {
   return (
-    <div className="w-full h-screen bg-green-300 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl mb-4">Page 2</h1>
-        <p className="text-xl">This is the content for Page 2.</p>
-        <p className="text-xl mt-2">It scrolls as a full page.</p>
+    <Section className="flex-col h-full py-20">
+      <h1 className="heading">
+        Kind words from
+        <span className="text-secondary"> satisfied clients</span>
+      </h1>
+      <div className="flex flex-col items-center max-lg:mt-10">
+        <div className="h-[50vh] md:h-[30rem] rounded-md flex flex-col antialiased items-center justify-center relative overflow-hidden">
+          <InfiniteMovingCards items={testimonials} direction="right" speed="slow" />
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-16 max-lg:mt-10">
+          {companies.map((company, index) => (
+            <React.Fragment key={`${company.id}-${index}`}>
+              <div className="flex md:max-w-60 max-w-32 gap-2">
+                <img src={company.img} alt={company.name} className="md:w-10 w-5" />
+                <img
+                  src={company.nameImg}
+                  alt={company.name}
+                  width={company.id === 4 || company.id === 5 ? 100 : 150}
+                  className="md:w-24 w-20"
+                />
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
-    </div>
+    </Section>
   );
 };
+
 export default Testimonials;

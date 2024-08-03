@@ -1,7 +1,7 @@
 'use client';
 
 import { useFullPageScroll } from '@/hooks/useFullPageScroll';
-import Landing from '@/components/Landing';
+import Landing from '@/components/Landing/Landing';
 import Projects from '@/components/Projects';
 import Experience from '@/components/Experience';
 import Testimonials from '@/components/Testimonials';

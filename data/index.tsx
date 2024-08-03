@@ -10,6 +10,7 @@ const Skeleton = () => (
     style={{ objectFit: 'cover', width: '100%', height: '100%' }}
   />
 );
+// data.js or data.ts
 
 export const navItems = [
   { name: 'About', link: '#about' },
@@ -21,56 +22,41 @@ export const navItems = [
 export const gridItems = [
   {
     title: 'Services',
-    description: 'Explore the birth of groundbreaking ideas and inventions.',
-    header: <Skeleton />,
-    className: 'col-span-2 row-span-2 ',
-    icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
+    description:
+      'Web Development | Responsive Design | User Experience (UX) | Cross-Browser Compatibility | Performance Optimization | Front-End Frameworks | Integration with Back End | Testing and Debugging',
+    className: 'col-span-2 row-span-2',
   },
   {
     title: '3+ years of experience',
-    description: 'Dive into the transformative power of technology.',
-    header: <Skeleton />,
+    description: 'Extensive experience in web development and related technologies.',
     className: 'col-span-1 row-span-1',
-    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
   {
     title: `I'm very flexible with time zone communications`,
-    description: 'Discover the beauty of thoughtful and functional design.',
-    header: <Skeleton />,
+    description: 'Available for collaboration across different time zones.',
     className: 'col-span-1 row-span-1',
-    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
   {
     title: 'Specializations',
-    description: 'E-commerce | SaaS | Web Applications ',
-    header: <Skeleton />,
+    description: 'E-commerce | SaaS | Web Applications',
     className: 'col-span-1 row-span-1',
-    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
   {
     title: 'The Inside Scoop',
     description: 'Currently building a JS Animation library.',
-    header: <Skeleton />,
-    className: 'col-span-2 row-span-2 ',
-    icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
+    className: 'col-span-2 row-span-2',
   },
   {
     title: 'Number of Projects Built',
     description: '70',
-    header: <Skeleton />,
     className: 'col-span-1 row-span-1',
-    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
 ];
 
 export const technologies = [
   'typescript',
   'javascript',
-  'dart',
-  'java',
   'react',
-  'flutter',
-  'android',
   'html5',
   'css3',
   'nodedotjs',
@@ -87,80 +73,70 @@ export const technologies = [
   'cypress',
   'docker',
   'git',
-  'jira',
   'github',
-  'gitlab',
   'visualstudiocode',
-  'androidstudio',
-  'sonarqube',
   'figma',
 ];
 
 export const projects = [
   {
     id: 1,
-    title: '3D Solar System Planets to Explore',
-    des: 'Explore the wonders of our solar system with this captivating 3D simulation of the planets using Three.js.',
-    img: '/p1.svg',
-    iconLists: ['/re.svg', '/tail.svg', '/ts.svg', '/three.svg', '/fm.svg'],
-    link: '/ui.earth.com',
+    title: 'GPTClone',
+    des: 'An application utilizing the power of OpenAI API, demonstrating advanced features of Next.js.',
+    iconLists: ['/next.svg'],
+    link: '#',
   },
   {
     id: 2,
-    title: 'Yoom - Video Conferencing App',
-    des: 'Simplify your video conferencing experience with Yoom. Seamlessly connect with colleagues and friends.',
-    img: '/p2.svg',
-    iconLists: ['/next.svg', '/tail.svg', '/ts.svg', '/stream.svg', '/c.svg'],
-    link: '/ui.yoom.com',
+    title: 'JobSeekr',
+    des: 'A robust application for tracking and managing job submissions built with the latest technologies.',
+    iconLists: ['/next.svg'],
+    link: '#',
   },
   {
     id: 3,
-    title: 'AI Image SaaS - Canva Application',
-    des: 'A REAL Software-as-a-Service app with AI features and a payments and credits system using the latest tech stack.',
-    img: '/p3.svg',
-    iconLists: ['/re.svg', '/tail.svg', '/ts.svg', '/three.svg', '/c.svg'],
-    link: '/ui.aiimg.com',
-  },
-  {
-    id: 4,
-    title: 'Animated Apple Iphone 3D Website',
-    des: 'Recreated the Apple iPhone 15 Pro website, combining GSAP animations and Three.js 3D effects..',
-    img: '/p4.svg',
-    iconLists: ['/next.svg', '/tail.svg', '/ts.svg', '/three.svg', '/gsap.svg'],
-    link: '/ui.apple.com',
+    title: 'SwiftSpeak',
+    des: 'A messenger application tailored for small businesses, allowing smooth communication and collaboration among users.',
+    iconLists: ['/next.svg'],
+    link: '#',
   },
 ];
 
 export const testimonials = [
   {
+    id: 1,
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: 'Michael Johnson',
-    title: 'Director of AlphaStream Technologies',
+      "Adrian's work on our project was exceptional. His attention to detail and innovative solutions greatly improved our web application's performance and user experience.",
+    name: 'Sarah Thompson',
+    title: 'CTO of TechInnovate',
   },
   {
+    id: 2,
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
+      'Working with Adrian was a game-changer for our startup. His expertise in React and Next.js helped us launch our product ahead of schedule.',
     name: 'Michael Johnson',
-    title: 'Director of AlphaStream Technologies',
+    title: 'Founder of WebSprint',
   },
   {
+    id: 3,
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: 'Michael Johnson',
-    title: 'Director of AlphaStream Technologies',
+      "Adrian's ability to translate complex requirements into elegant code is remarkable. He's a valuable asset to any development team.",
+    name: 'Emily Chen',
+    title: 'Lead Developer at CodeCraft',
   },
   {
+    id: 4,
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: 'Michael Johnson',
-    title: 'Director of AlphaStream Technologies',
+      "I was impressed by Adrian's professionalism and technical skills. He delivered a high-quality solution that exceeded our expectations.",
+    name: 'David Rodriguez',
+    title: 'Project Manager at InnoSystems',
   },
   {
+    id: 5,
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: 'Michael Johnson',
-    title: 'Director of AlphaStream Technologies',
+      "Adrian's dedication to clean, efficient code and his collaborative approach made our project a success. I highly recommend his services.",
+    name: 'Lisa Nakamura',
+    title: 'Director of UX at DesignHub',
   },
 ];
 
@@ -200,45 +176,21 @@ export const companies = [
 export const workExperience = [
   {
     id: 1,
-    title: 'Frontend Engineer Intern',
-    desc: 'Assisted in the development of a web-based platform using React.js, enhancing interactivity.',
-    className: 'md:col-span-2',
-    thumbnail: '/exp1.svg',
+    title: 'Freelance Web Developer',
+    desc: 'Developed various web applications using Next.js, React, TypeScript, and other modern technologies.',
+    period: 'Since October 2021',
+    location: 'Morocco, Marrakesh/Safi',
   },
   {
     id: 2,
-    title: 'Mobile App Dev - JSM Tech',
-    desc: 'Designed and developed mobile app for both iOS & Android platforms using React Native.',
-    className: 'md:col-span-2', // change to md:col-span-2
-    thumbnail: '/exp2.svg',
-  },
-  {
-    id: 3,
-    title: 'Freelance App Dev Project',
-    desc: 'Led the dev of a mobile app for a client, from initial concept to deployment on app stores.',
-    className: 'md:col-span-2', // change to md:col-span-2
-    thumbnail: '/exp3.svg',
-  },
-  {
-    id: 4,
-    title: 'Lead Frontend Developer',
-    desc: 'Developed and maintained user-facing features using modern frontend technologies.',
-    className: 'md:col-span-2',
-    thumbnail: '/exp4.svg',
+    title: 'Mobile / Web Developer',
+    desc: 'Completed a comprehensive web development boot camp, working on various projects.',
+    period: 'November 2021 to October 2022',
+    location: 'Morocco, Safi',
   },
 ];
 
 export const socialMedia = [
-  {
-    id: 1,
-    img: '/git.svg',
-  },
-  {
-    id: 2,
-    img: '/twit.svg',
-  },
-  {
-    id: 3,
-    img: '/link.svg',
-  },
+  { id: 1, img: '/github.svg', link: 'https://github.com/AymenXS' },
+  { id: 2, img: '/linkedin.svg', link: 'https://linkedin.com/in/ghaloua-aymen/' },
 ];
