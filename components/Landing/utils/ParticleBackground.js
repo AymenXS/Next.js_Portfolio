@@ -1,0 +1,218 @@
+// Vanilla
+import { useRef, useEffect } from 'react';
+
+const ParticleBackground = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let particles = [];
+    let time = 0;
+
+    const deg = (a) => (Math.PI / 180) * a;
+    const rand = (v1, v2) => Math.floor(v1 + Math.random() * (v2 - v1));
+
+    const opt = {
+      particles: typeof window !== 'undefined' ? (window.innerWidth / 500 ? 1000 : 500) : 500,
+      noiseScale: 0.009,
+      angle: deg(-90),
+      h1: rand(0, 360),
+      h2: rand(0, 360),
+      s1: rand(20, 90),
+      s2: rand(20, 90),
+      l1: rand(30, 80),
+      l2: rand(30, 80),
+      strokeWeight: 1.2,
+      tail: 82,
+    };
+
+    // Improved Perlin Noise implementation
+    const noise = (() => {
+      const permutation = [];
+      for (let i = 0; i < 256; i++) permutation.push(i);
+      for (let i = 255; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [permutation[i], permutation[j]] = [permutation[j], permutation[i]];
+      }
+      const p = [...permutation, ...permutation];
+
+      const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+      const lerp = (t, a, b) => a + t * (b - a);
+      const grad = (hash, x, y, z) => {
+        const h = hash & 15;
+        const u = h < 8 ? x : y;
+        const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+        return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+      };
+
+      return (x, y, z) => {
+        const X = Math.floor(x) & 255;
+        const Y = Math.floor(y) & 255;
+        const Z = Math.floor(z) & 255;
+        x -= Math.floor(x);
+        y -= Math.floor(y);
+        z -= Math.floor(z);
+        const u = fade(x);
+        const v = fade(y);
+        const w = fade(z);
+        const A = p[X] + Y,
+          AA = p[A] + Z,
+          AB = p[A + 1] + Z;
+        const B = p[X + 1] + Y,
+          BA = p[B] + Z,
+          BB = p[B + 1] + Z;
+
+        return lerp(
+          w,
+          lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x - 1, y, z)), lerp(u, grad(p[AB], x, y - 1, z), grad(p[BB], x - 1, y - 1, z))),
+          lerp(
+            v,
+            lerp(u, grad(p[AA + 1], x, y, z - 1), grad(p[BA + 1], x - 1, y, z - 1)),
+            lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))
+          )
+        );
+      };
+    })();
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.lx = x;
+        this.ly = y;
+        this.vx = 0;
+        this.vy = 0;
+        this.ax = 0;
+        this.ay = 0;
+        this.hueSemen = Math.random();
+        this.hue = this.hueSemen > 0.5 ? 20 + opt.h1 : 20 + opt.h2;
+        this.sat = this.hueSemen > 0.5 ? opt.s1 : opt.s2;
+        this.light = this.hueSemen > 0.5 ? opt.l1 : opt.l2;
+        this.maxSpeed = this.hueSemen > 0.5 ? 3 : 2;
+      }
+
+      randomize() {
+        this.hueSemen = Math.random();
+        this.hue = this.hueSemen > 0.5 ? 20 + opt.h1 : 20 + opt.h2;
+        this.sat = this.hueSemen > 0.5 ? opt.s1 : opt.s2;
+        this.light = this.hueSemen > 0.5 ? opt.l1 : opt.l2;
+        this.maxSpeed = this.hueSemen > 0.5 ? 3 : 2;
+      }
+
+      update() {
+        this.follow();
+
+        this.vx += this.ax;
+        this.vy += this.ay;
+
+        var p = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        var a = Math.atan2(this.vy, this.vx);
+        var m = Math.min(this.maxSpeed, p);
+        this.vx = Math.cos(a) * m;
+        this.vy = Math.sin(a) * m;
+
+        this.x += this.vx;
+        this.y += this.vy;
+        this.ax = 0;
+        this.ay = 0;
+
+        this.edges();
+      }
+
+      follow() {
+        let angle = noise(this.x * opt.noiseScale, this.y * opt.noiseScale, time * opt.noiseScale) * Math.PI * 0.5 + opt.angle;
+
+        this.ax += Math.cos(angle);
+        this.ay += Math.sin(angle);
+      }
+
+      updatePrev() {
+        this.lx = this.x;
+        this.ly = this.y;
+      }
+
+      edges() {
+        if (this.x < 0) {
+          this.x = canvas.width;
+          this.updatePrev();
+        }
+        if (this.x > canvas.width) {
+          this.x = 0;
+          this.updatePrev();
+        }
+        if (this.y < 0) {
+          this.y = canvas.height;
+          this.updatePrev();
+        }
+        if (this.y > canvas.height) {
+          this.y = 0;
+          this.updatePrev();
+        }
+      }
+
+      render() {
+        ctx.strokeStyle = `hsla(${this.hue}, ${this.sat}%, ${this.light}%, .5)`;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.lx, this.ly);
+        ctx.stroke();
+        this.updatePrev();
+      }
+    }
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      opt.particles = window.innerWidth / 500 ? 1000 : 500;
+      particles = [];
+      for (let i = 0; i < opt.particles; i++) {
+        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+      }
+      ctx.lineWidth = opt.strokeWeight;
+    };
+
+    const handleClick = () => {
+      opt.h1 = rand(0, 360);
+      opt.h2 = rand(0, 360);
+      opt.s1 = rand(20, 90);
+      opt.s2 = rand(20, 90);
+      opt.l1 = rand(30, 80);
+      opt.l2 = rand(30, 80);
+      opt.angle += deg(Math.random() * 60) * (Math.random() > 0.5 ? 1 : -1);
+
+      for (let p of particles) {
+        p.randomize();
+      }
+    };
+
+    const animate = () => {
+      time++;
+      ctx.fillStyle = `rgba(255, 255, 255, ${(100 - opt.tail) / 100})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let p of particles) {
+        p.update();
+        p.render();
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    document.body.addEventListener('click', handleClick);
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      document.body.removeEventListener('click', handleClick);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />;
+};
+
+export default ParticleBackground;

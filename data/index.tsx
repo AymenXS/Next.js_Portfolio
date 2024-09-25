@@ -22,7 +22,7 @@ export const gridItems = [
     description:
       'Web Development | Responsive Design | User Experience (UX) | Cross-Browser Compatibility | Performance Optimization | Front-End Frameworks | Integration with Back End | Testing and Debugging',
     className: 'col-span-2 row-span-2',
-    img: '/b1.svg',
+    // img: '/b1.svg',
     imgClassName: 'w-full h-full',
     titleClassName: 'justify-end',
     spareImg: '',

@@ -10,7 +10,8 @@ const Introduction = () => {
       </div>
       <Spotlight className="h-[80vh] w-[50vw] top-10 left-full" fill="red" />
       <Spotlight className="left-80 top-28 h-[80vh] w-[50vw]" fill="red" />
-      <div className="h-full w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center | flex-col gap-y-3">
+      {/* <div className="h-full w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center | flex-col gap-y-3"> */}
+      <div className="h-full w-full dark:bg-black bg-white relative flex items-center justify-center | flex-col gap-y-3">
         {/* Radial gradient for the container to give a faded look */}
         <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
         <h5 className="uppercase tracking-widest text-xs text-center">Aymen Ghaloua | Full-Stack Developer</h5>

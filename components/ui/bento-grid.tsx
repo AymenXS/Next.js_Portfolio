@@ -1,6 +1,8 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 
+const ParticleBackground = dynamic(() => import('../Landing/utils/ParticleBackground'), { ssr: false });
 export const BentoGrid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
   return (
     <div className={cn('grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 mx-auto max-w-7xl w-full px-6 py-12 h-[90vh]', className)}>
@@ -34,11 +36,13 @@ export const BentoGridItem = ({
         'rounded-3xl group/bento hover:shadow-2xl transition-all duration-300 shadow-lg dark:shadow-none p-6 md:p-8 dark:bg-black/50 bg-white/10 backdrop-blur-sm border border-white/10 flex flex-col justify-between relative overflow-hidden',
         className
       )}
-      style={{
-        background: 'rgba(4,7,29,0.8)',
-        backgroundImage: 'linear-gradient(135deg, rgba(4,7,29,0.9) 0%, rgba(12,14,35,0.8) 100%)',
-      }}
+      // style={{
+      //   background: 'rgba(4,7,29,0.8)',
+      //   backgroundImage: 'linear-gradient(135deg, rgba(4,7,29,0.9) 0%, rgba(12,14,35,0.8) 100%)',
+      //   backgroundBlendMode: 'overlay'
+      // }}
     >
+      <ParticleBackground />
       {img && (
         <div className="absolute inset-0 w-full h-full">
           <Image
@@ -60,7 +64,7 @@ export const BentoGridItem = ({
         </div>
       )}
       <div className={cn('relative z-20 h-full flex flex-col', titleClassName)}>
-        <h3 className="font-sans text-xl md:text-2xl lg:text-3xl font-bold text-white mb-3 group-hover/bento:translate-x-1 transition-transform duration-300">
+        <h3 className="font-sans text-xl md:text-2xl lg:text-3xl font-bold text-text mb-3 group-hover/bento:translate-x-1 transition-transform duration-300">
           {title}
         </h3>
         <p className="font-sans font-light text-sm md:text-base lg:text-lg text-gray-300 mt-2 group-hover/bento:translate-y-1 transition-transform duration-300 line-clamp-4 md:line-clamp-none">
