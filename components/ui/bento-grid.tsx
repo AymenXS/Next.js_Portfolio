@@ -42,7 +42,7 @@ export const BentoGridItem = ({
       //   backgroundBlendMode: 'overlay'
       // }}
     >
-      <ParticleBackground />
+      {/* <ParticleBackground /> */}
       {img && (
         <div className="absolute inset-0 w-full h-full">
           <Image

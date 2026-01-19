@@ -1,5 +1,4 @@
 import Section from '@/shared/Section';
-import { Spotlight } from '../ui/spotlight';
 import ThemeToggle from './ThemeToggle';
 
 const Introduction = () => {
@@ -8,18 +7,38 @@ const Introduction = () => {
       <div className="absolute top-5 right-5 z-30">
         <ThemeToggle />
       </div>
-      {/* <Spotlight className="h-[80vh] w-[50vw] top-10 left-full" fill="red" />
-      <Spotlight className="left-80 top-28 h-[80vh] w-[50vw]" fill="red" /> */}
-      {/* <div className="h-full w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center | flex-col gap-y-3"> */}
-      <div className="h-full w-full dark:bg-black bg-white relative flex items-center justify-center | flex-col gap-y-3">
-        {/* Radial gradient for the container to give a faded look */}
-        <div></div>
-        <h5 className="uppercase tracking-widest text-xs text-center">Aymen Ghaloua | Full-Stack Developer</h5>
-        <h3 className="text-center text-xl mb-12">Transforming Complex Ideas into Elegant, Innovative Solutions</h3>
-        <h4 className="">I'm a passionate developer with a knack for creating responsive, user-centric web applications.</h4>
-        <h4>With 3+ years of experience, I bridge the gap between design and functionality.</h4>
-        <h4 className=" max-w-lg text-center ">From concept to deployment, I deliver smooth user experiences</h4>
-        <h4 className="text-center mb-32">that drive results and meets expectations.</h4>
+      <div
+        className={
+          // 1) Layout
+          // 2) Positioning
+          'relative ' +
+          // 3) Display & Flexbox/Grid
+          'flex flex-col items-center justify-center ' +
+          // 4) Spacing
+          'gap-y-3 ' +
+          // 5) Sizing
+          'h-full w-full ' +
+          // 6) Typography
+          'text-center'
+          // 7) Backgrounds
+          // 8) Borders
+          // 9) Effects
+          // 10) Transforms
+          // 11) Transitions & Animations
+          // 12) Interactivity
+          // 13) Accessibility
+          // 14) States
+          // 15) Responsive
+          // 16) Dark Mode
+          // 17) Custom/Misc
+        }
+      >
+        <p>*Don't want much in the beginning to not prevent the interactive background from being overwhelmed; beginning of the refreshing feeling driven experience*</p>
+        <p>- Interactive Background</p>
+        <p>- Title + Tagline Something with AI</p>
+        <p>- Primary CTA button: Resume DL, Contact, Checking</p>
+
+        <hr className="w-full my-4" />
       </div>
     </Section>
   );

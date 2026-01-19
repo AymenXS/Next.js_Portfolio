@@ -8,7 +8,7 @@ import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 
 const NUM_PAGES = 5;
-const SECTIONS_PER_PAGE = [6]; // 4 sections in Page 1, 1 section each in Page 2 and 3
+const SECTIONS_PER_PAGE = [5]; // 4 sections in Page 1, 1 section each in Page 2 and 3
 
 const Main = () => {
   const { containerRef, slidesRef, currentPage, currentSection, navigateTo } = useFullPageScroll(NUM_PAGES, SECTIONS_PER_PAGE);
@@ -20,10 +20,10 @@ const Main = () => {
           <Landing />
         </div>
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[1] = element)}>
-          <Projects />
+          <Experience />
         </div>
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[2] = element)}>
-          <Experience />
+          <Projects />
         </div>
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[3] = element)}>
           <Testimonials />

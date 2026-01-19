@@ -1,35 +1,59 @@
-'use client';
-
-import React, { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CanvasRevealEffect } from '@/components/ui/canvas-reveal-effect';
 import Section from '@/shared/Section';
 
 const Approach = () => {
   return (
-    <Section className="flex-col h-full w-full">
-      <h1 className="heading mt-16">
-        My <span className="text-secondary">approach</span>
-      </h1>
-      <div className="flex flex-col lg:flex-row items-center justify-center w-full gap-4">
-        <Card title="Planning & Strategy" icon={<AceternityIcon />}>
-          <CanvasRevealEffect animationSpeed={5} containerClassName="bg-emerald-900" />
-        </Card>
-        <Card title="Development & Progress Update" icon={<AceternityIcon />}>
-          <CanvasRevealEffect
-            animationSpeed={5}
-            containerClassName="bg-black"
-            colors={[
-              [236, 72, 153],
-              [232, 121, 249],
-            ]}
-            dotSize={2}
-          />
-          <div className="absolute inset-0 [mask-image:radial-gradient(400px_at_center,white,transparent)] bg-black/50" />
-        </Card>
-        <Card title="Development & Launch" icon={<AceternityIcon />}>
-          <CanvasRevealEffect animationSpeed={5} containerClassName="bg-sky-600" colors={[[125, 211, 252]]} />
-        </Card>
+    <Section
+      className={
+        // 1) Layout
+        // 2) Positioning
+        // 3) Display & Flexbox/Grid
+        'flex-col ' +
+        // 4) Spacing
+        // 5) Sizing
+        'h-full w-full'
+        // 6) Typography
+        // 7) Backgrounds
+        // 8) Borders
+        // 9) Effects
+        // 10) Transforms
+        // 11) Transitions & Animations
+        // 12) Interactivity
+        // 13) Accessibility
+        // 14) States
+        // 15) Responsive
+        // 16) Dark Mode
+        // 17) Custom/Misc
+      }
+    >
+      <h1 className="mt-16">My <span>approach</span></h1>
+      <div
+        className={
+          // 1) Layout
+          // 2) Positioning
+          // 3) Display & Flexbox/Grid
+          'flex flex-col items-center justify-center ' +
+          // 4) Spacing
+          'gap-4 ' +
+          // 5) Sizing
+          'w-full ' +
+          // 6) Typography
+          // 7) Backgrounds
+          // 8) Borders
+          // 9) Effects
+          // 10) Transforms
+          // 11) Transitions & Animations
+          // 12) Interactivity
+          // 13) Accessibility
+          // 14) States
+          // 15) Responsive
+          'lg:flex-row'
+          // 16) Dark Mode
+          // 17) Custom/Misc
+        }
+      >
+        <Card title="Planning & Strategy" />
+        <Card title="Development & Progress Update" />
+        <Card title="Launch & Monitoring" />
       </div>
     </Section>
   );
@@ -37,78 +61,39 @@ const Approach = () => {
 
 export default Approach;
 
-const Card = ({ title, icon, children, des }) => {
-  const [hovered, setHovered] = useState(false);
+const Card = ({ title }) => {
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="border border-black/[0.2] group/canvas-card flex items-center justify-center max-w-sm w-full mx-auto p-4 relative h-[30rem] relative"
+      className={
+        // 1) Layout
+        // 2) Positioning
+        'relative ' +
+        // 3) Display & Flexbox/Grid
+        'flex items-center justify-center ' +
+        // 4) Spacing
+        'p-4 ' +
+        // 5) Sizing
+        'h-[30rem] max-w-sm w-full ' +
+        // 6) Typography
+        // 7) Backgrounds
+        // 8) Borders
+        'border ' +
+        // 9) Effects
+        // 10) Transforms
+        // 11) Transitions & Animations
+        // 12) Interactivity
+        // 13) Accessibility
+        // 14) States
+        // 15) Responsive
+        'mx-auto ' +
+        // 16) Dark Mode
+        // 17) Custom/Misc
+        'skeleton-box'
+      }
     >
-      <Icon className="absolute h-6 w-6 -top-3 -left-3 text-text" />
-      <Icon className="absolute h-6 w-6 -bottom-3 -left-3 text-text" />
-      <Icon className="absolute h-6 w-6 -top-3 -right-3 text-text" />
-      <Icon className="absolute h-6 w-6 -bottom-3 -right-3 text-text" />
-      <AnimatePresence>
-        {hovered && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full w-full absolute inset-0">
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="relative z-20">
-        <div className="text-center group-hover/canvas-card:-translate-y-4 group-hover/canvas-card:opacity-0 transition duration-200 w-full mx-auto flex items-center justify-center">
-          {icon}
-        </div>
-        <h2 className="text-text text-xl opacity-0 group-hover/canvas-card:opacity-100 relative z-10 mt-4 font-bold group-hover/canvas-card:text-white group-hover/canvas-card:-translate-y-2 transition duration-200">
-          {title}
-        </h2>
-        <p
-          className="text-sm opacity-0 group-hover/canvas-card:opacity-100 relative z-10 mt-4 group-hover/canvas-card:text-white text-center group-hover/canvas-card:-translate-y-2 transition duration-200"
-          style={{ color: '#E4ECFF' }}
-        >
-          {des}
-        </p>
+      <div className="relative z-20 flex flex-col items-center justify-center w-full">
+        <h2 className="relative z-10 mt-4 text-xl">{title}</h2>
       </div>
     </div>
-  );
-};
-
-const AceternityIcon = () => {
-  return (
-    <svg
-      width="66"
-      height="65"
-      viewBox="0 0 66 65"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-10 w-10 text-text group-hover/canvas-card:text-white"
-    >
-      <path
-        d="M8 8.05571C8 8.05571 54.9009 18.1782 57.8687 30.062C60.8365 41.9458 9.05432 57.4696 9.05432 57.4696"
-        stroke="currentColor"
-        strokeWidth="15"
-        strokeMiterlimit="3.86874"
-        strokeLinecap="round"
-        style={{ mixBlendMode: 'darken' }}
-      />
-    </svg>
-  );
-};
-
-export const Icon = ({ className, ...rest }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      className={className}
-      {...rest}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
-    </svg>
   );
 };
