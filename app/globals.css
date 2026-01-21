@@ -60,12 +60,11 @@
 
 /* ================================
    Skeleton helpers (Phase 1)
-   Toggle: <html class="sk">
+   Toggle: <html class="skeleton">
    ================================ */
 
    .skeleton .skeleton-section {
-    /* outline: 2px dashed rgba(120, 120, 120, 0.5); */
-    outline-offset: 6px;
+    @apply h-full w-full;
   }
   
   .skeleton .skeleton-box {

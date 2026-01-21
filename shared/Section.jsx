@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'; // Assuming you have a utils file with cn function
+// This is for transition animation; so far intended for Landing Only
 
 export default function Section({ className, children, bgColor, isActive = false }) {
   return (
