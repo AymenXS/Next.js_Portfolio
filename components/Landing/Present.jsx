@@ -1,13 +1,5 @@
 import Section from '@/shared/Section';
-
-const capabilities = [
-  { id: 1, title: 'Full Stack', description: 'End-to-end development', icon: '[🔧]' },
-  { id: 2, title: 'AI/LLM Integration', description: 'AI-powered solutions', icon: '[🤖]' },
-  { id: 3, title: 'Automation', description: 'Process automation', icon: '[⚡]' },
-  { id: 4, title: 'Design', description: 'User-focused design', icon: '[🎨]' },
-  { id: 5, title: 'System Thinking', description: 'Holistic approach', icon: '[🧠]' },
-  { id: 6, title: 'API Development', description: 'Robust APIs', icon: '[🔌]' },
-];
+import { BentoGrid, BentoGridItem } from '../ui/bento-grid';
 
 const Present = () => {
   return (
@@ -15,13 +7,11 @@ const Present = () => {
       className={
         // 1) Layout
         // 2) Positioning
-        'flex-col ' +
         // 3) Display & Flexbox/Grid
-        'flex items-center justify-center ' +
+        'flex-col ' +
         // 4) Spacing
-        'px-6 py-10 ' +
         // 5) Sizing
-        'h-full w-full ' +
+        'h-full'
         // 6) Typography
         // 7) Backgrounds
         // 8) Borders
@@ -32,153 +22,92 @@ const Present = () => {
         // 13) Accessibility
         // 14) States
         // 15) Responsive
-        'md:px-10 ' +
         // 16) Dark Mode
         // 17) Custom/Misc
-        'skeleton-section'
       }
     >
-      <div className="w-full max-w-6xl">
-        <h1 className="mb-6 text-center">Present Capabilities</h1>
+      <BentoGrid className="max-w-[90%]">
+        {/* Card 1: Full-Stack Development */}
+        <BentoGridItem
+          key={1}
+          id={1}
+          title="Full-Stack Development"
+          description="End-to-end web and mobile applications built with modern frameworks and scalable architecture"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">REACT • NEXT.JS • NODE.JS • PYTHON</p>
 
-        {/* Bento Grid */}
-        <div
-          className={
-            // 1) Layout
-            // 2) Positioning
-            // 3) Display & Flexbox/Grid
-            'grid ' +
-            // 4) Spacing
-            'gap-4 ' +
-            // 5) Sizing
-            'w-full h-[70vh] ' +
-            // 6) Typography
-            // 7) Backgrounds
-            // 8) Borders
-            // 9) Effects
-            // 10) Transforms
-            // 11) Transitions & Animations
-            // 12) Interactivity
-            // 13) Accessibility
-            // 14) States
-            // 15) Responsive
-            'grid-cols-6 grid-rows-6 ' +
-            // 16) Dark Mode
-            // 17) Custom/Misc
-            ''
-          }
-        >
-          {/* Center Sphere Placeholder (3x3) */}
-          <div
-            className={
-              // 1) Layout
-              // 2) Positioning
-              'relative ' +
-              // 3) Display & Flexbox/Grid
-              'flex flex-col items-center justify-center ' +
-              // 4) Spacing
-              'p-6 ' +
-              // 5) Sizing
-              'col-start-3 col-span-2 row-start-3 row-span-2 ' +
-              // 6) Typography
-              'text-center ' +
-              // 7) Backgrounds
-              // 8) Borders
-              'border rounded-md ' +
-              // 9) Effects
-              // 10) Transforms
-              // 11) Transitions & Animations
-              // 12) Interactivity
-              // 13) Accessibility
-              // 14) States
-              // 15) Responsive
-              'md:col-start-3 md:col-span-2 md:row-start-3 md:row-span-2 ' +
-              // 16) Dark Mode
-              // 17) Custom/Misc
-              'skeleton-box'
-            }
-          >
-            <div className="text-base font-medium">3D Sphere</div>
-            <div className="mt-2 text-sm opacity-90">Rotating technologies visualization</div>
-            <div className="mt-2 text-xs opacity-75">TODO: Add Three.js/WebGL rotating tech sphere</div>
-          </div>
+        {/* Card 2: AI/LLM Solutions */}
+        <BentoGridItem
+          key={2}
+          id={2}
+          title="AI/LLM Solutions"
+          description="Intelligent features powered by GPT, Claude, and custom AI models to automate and enhance your applications"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">OPENAI • CLAUDE • LANGCHAIN • HUGGING FACE</p>
 
-          {/* Capability Cards (placed around center) */}
-          <BentoCard
-            item={capabilities[0]}
-            className="col-start-1 col-span-2 row-start-1 row-span-2"
-          />
-          <BentoCard
-            item={capabilities[1]}
-            className="col-start-5 col-span-2 row-start-1 row-span-2"
-          />
-          <BentoCard
-            item={capabilities[2]}
-            className="col-start-1 col-span-2 row-start-3 row-span-2"
-          />
-          <BentoCard
-            item={capabilities[3]}
-            className="col-start-5 col-span-2 row-start-3 row-span-2"
-          />
-          <BentoCard
-            item={capabilities[4]}
-            className="col-start-2 col-span-2 row-start-5 row-span-2"
-          />
-          <BentoCard
-            item={capabilities[5]}
-            className="col-start-4 col-span-2 row-start-5 row-span-2"
-          />
+        {/* Card 3: Automation & Workflows */}
+        <BentoGridItem
+          key={3}
+          id={3}
+          title="Automation & Workflows"
+          description="Streamline repetitive tasks and complex processes with smart automation that saves time and reduces errors"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">ZAPIER • N8N • PYTHON SCRIPTS • APIs</p>
+
+        {/* Center: 3D Sphere Placeholder */}
+        <div className="flex flex-col items-center justify-center p-4 skeleton-box">
+          <p className="font-bold">3D Rotating Technology Sphere</p>
+          <p className="text-sm opacity-60">Visualizing my core tech stack in 3D space</p>
+          <p className="text-xs opacity-40 mt-2">[React, Next.js, Node.js, Python, PostgreSQL, Docker, AWS, TailwindCSS, TypeScript, Redis, OpenAI API, WebGL]</p>
         </div>
 
-        {/* Future notes */}
-        <div className="mt-6 border rounded-md p-4 skeleton-box">
-          <div className="text-sm font-medium">Future Implementation Notes</div>
-          <div className="mt-2 text-sm opacity-90">
-            3D Sphere: WebGL rotating technology stack visualization
-          </div>
-          <div className="mt-3 text-xs opacity-75">
-            Mobile responsive layout will be implemented after desktop skeleton is complete
-          </div>
-        </div>
-      </div>
+        {/* Card 4: Design & UX */}
+        <BentoGridItem
+          key={4}
+          id={4}
+          title="Design & UX"
+          description="Beautiful, intuitive interfaces designed with users in mind—from wireframes to polished design systems"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">FIGMA • ADOBE XD • PROTOTYPING • DESIGN SYSTEMS</p>
+
+        {/* Card 5: System Architecture */}
+        <BentoGridItem
+          key={5}
+          id={5}
+          title="System Architecture"
+          description="Scalable, maintainable systems designed with long-term growth and performance in mind"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">DISTRIBUTED SYSTEMS • MICROSERVICES • OPTIMIZATION</p>
+
+        {/* Card 6: Code Quality & Security */}
+        <BentoGridItem
+          key={6}
+          id={6}
+          title="Code Quality & Security"
+          description="Clean, secure, maintainable code with best practices baked in from day one"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">CODE REVIEW • REFACTORING • SECURITY • TESTING</p>
+      </BentoGrid>
     </Section>
   );
 };
 
 export default Present;
-
-const BentoCard = ({ item, className }) => {
-  return (
-    <div
-      className={
-        // 1) Layout
-        // 2) Positioning
-        'relative ' +
-        // 3) Display & Flexbox/Grid
-        'flex flex-col ' +
-        // 4) Spacing
-        'p-4 ' +
-        // 5) Sizing
-        'w-full h-full ' +
-        // 6) Typography
-        // 7) Backgrounds
-        // 8) Borders
-        'border rounded-md ' +
-        // 9) Effects
-        // 10) Transforms
-        // 11) Transitions & Animations
-        // 12) Interactivity
-        // 13) Accessibility
-        // 14) States
-        // 15) Responsive
-        // 16) Dark Mode
-        // 17) Custom/Misc
-        `skeleton-box ${className}`
-      }
-    >
-      <div className="text-sm opacity-80">{item.icon} Icon placeholder</div>
-      <div className="mt-2 text-lg font-medium">{item.title}</div>
-      <div className="mt-1 text-sm opacity-90">{item.description}</div>
-    </div>
-  );
-};

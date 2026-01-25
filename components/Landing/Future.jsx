@@ -1,13 +1,5 @@
 import Section from '@/shared/Section';
-
-const direction = [
-  { id: 1, type: 'exploration', title: 'Current Exploration', content: 'Exploring [topic]' },
-  { id: 2, type: 'skill', title: 'Latest Skill', content: 'Recently mastered [skill]' },
-  { id: 3, type: 'direction', title: 'Future Direction', content: 'Heading towards [direction placeholder - System Thinking]' },
-  { id: 4, type: 'metric', value: '3+', label: 'Years Experience' },
-  { id: 5, type: 'metric', value: 'X', label: 'Projects Delivered' },
-  { id: 6, type: 'metric', value: 'Y', label: 'Technologies Mastered' },
-];
+import { BentoGrid, BentoGridItem } from '../ui/bento-grid';
 
 const Future = () => {
   return (
@@ -15,13 +7,11 @@ const Future = () => {
       className={
         // 1) Layout
         // 2) Positioning
-        'flex-col ' +
         // 3) Display & Flexbox/Grid
-        'flex items-center justify-center ' +
+        'flex-col ' +
         // 4) Spacing
-        'px-6 py-10 ' +
         // 5) Sizing
-        'h-full w-full ' +
+        'h-full'
         // 6) Typography
         // 7) Backgrounds
         // 8) Borders
@@ -32,69 +22,92 @@ const Future = () => {
         // 13) Accessibility
         // 14) States
         // 15) Responsive
-        'md:px-10 ' +
         // 16) Dark Mode
         // 17) Custom/Misc
-        'skeleton-section'
       }
     >
-      <div className="w-full max-w-6xl">
-        <h1 className="mb-6 text-center">Future Direction</h1>
+      <BentoGrid className="max-w-full">
+        {/* Card 1: Current Exploration */}
+        <BentoGridItem
+          key={1}
+          id={1}
+          title="Current Exploration"
+          description="Diving deep into System Design patterns—learning distributed systems, microservices architecture, and scalable infrastructure design"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">[🔍]</p>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-6 grid-rows-6 gap-4 w-full h-[70vh]">
-          {/* Center Globe Placeholder */}
-          <div className="col-start-3 col-span-2 row-start-3 row-span-2 border rounded-md p-6 text-center skeleton-box flex flex-col items-center justify-center">
-            <div className="text-base font-medium">3D Globe</div>
-            <div className="mt-2 text-sm opacity-90">Time Zone Flexible visualization</div>
-            <div className="mt-2 text-xs opacity-75">
-              TODO: Add Three.js/WebGL rotating globe with time zones
-            </div>
-          </div>
+        {/* Card 2: Latest Skill */}
+        <BentoGridItem
+          key={2}
+          id={2}
+          title="Latest Skill"
+          description="Recently mastered WebGL and 3D web experiences—bringing interactive 3D graphics and immersive visual experiences to the web"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">[✨]</p>
 
-          {/* Content Cards */}
-          <InfoCard title={direction[0].title} content={direction[0].content} className="col-start-1 col-span-3 row-start-1 row-span-2" />
-          <InfoCard title={direction[1].title} content={direction[1].content} className="col-start-4 col-span-3 row-start-1 row-span-2" />
-          <InfoCard title={direction[2].title} content={direction[2].content} className="col-start-1 col-span-3 row-start-5 row-span-2" />
+        {/* Card 3: Future Direction */}
+        <BentoGridItem
+          key={3}
+          id={3}
+          title="Future Direction"
+          description="Heading towards systems engineering combined with AI-augmented development workflows—building intelligent, scalable systems that leverage AI at their core"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">[🎯]</p>
 
-          {/* Metric Cards */}
-          <MetricCard value={direction[3].value} label={direction[3].label} className="col-start-5 col-span-2 row-start-5 row-span-1" />
-          <MetricCard value={direction[4].value} label={direction[4].label} className="col-start-5 col-span-2 row-start-6 row-span-1" />
-          <MetricCard value={direction[5].value} label={direction[5].label} className="col-start-4 col-span-2 row-start-5 row-span-2" />
+        {/* Center: 3D Globe Placeholder */}
+        <div className="flex flex-col items-center justify-center p-4 skeleton-box">
+          <p className="font-bold">3D Rotating Globe with Time Zones</p>
+          <p className="text-sm opacity-60">Working flexibly across global time zones</p>
+          <p className="text-xs opacity-40 mt-2">[UTC-5 to UTC+1 coverage]</p>
         </div>
 
-        {/* Future notes */}
-        <div className="mt-6 border rounded-md p-4 skeleton-box">
-          <div className="text-sm font-medium">Future Implementation Notes</div>
-          <div className="mt-2 text-sm opacity-90">
-            3D Globe: Interactive time zone display with rotation
-          </div>
-          <div className="mt-3 text-xs opacity-75">
-            Mobile responsive layout will be implemented after desktop skeleton is complete
-          </div>
-        </div>
-      </div>
+        {/* Card 4: Years Experience (Metric) */}
+        <BentoGridItem
+          key={4}
+          id={4}
+          title="4+"
+          description="Years Experience"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">[📅]</p>
+
+        {/* Card 5: Projects Delivered (Metric) */}
+        <BentoGridItem
+          key={5}
+          id={5}
+          title="15+"
+          description="Projects Delivered"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">[🚀]</p>
+
+        {/* Card 6: Technologies Mastered (Metric) */}
+        <BentoGridItem
+          key={6}
+          id={6}
+          title="TBD"
+          description="Technologies Mastered (until I calculate it)"
+          className=""
+          titleClassName="justify-end"
+          spareImg={''}
+        />
+        <p className="text-xs opacity-60">[🛠️]</p>
+      </BentoGrid>
     </Section>
   );
 };
 
 export default Future;
-
-const InfoCard = ({ title, content, className }) => {
-  return (
-    <div className={`border rounded-md p-4 skeleton-box ${className}`}>
-      <div className="text-sm opacity-80">[Icon placeholder]</div>
-      <div className="mt-2 text-lg font-medium">{title}</div>
-      <div className="mt-1 text-sm opacity-90">{content}</div>
-    </div>
-  );
-};
-
-const MetricCard = ({ value, label, className }) => {
-  return (
-    <div className={`border rounded-md p-4 skeleton-box ${className}`}>
-      <div className="text-2xl font-semibold">{value}</div>
-      <div className="mt-1 text-sm opacity-90">{label}</div>
-    </div>
-  );
-};
