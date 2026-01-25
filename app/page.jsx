@@ -1,3 +1,4 @@
+// app/page.jsx
 'use client';
 
 import { useFullPageScroll } from '@/hooks/useFullPageScroll';
@@ -8,26 +9,31 @@ import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 
 const NUM_PAGES = 5;
-const SECTIONS_PER_PAGE = [5]; // 4 sections in Page 1, 1 section each in Page 2 and 3
+const SECTIONS_PER_PAGE = [5];
 
 const Main = () => {
-  const { containerRef, slidesRef, currentPage, currentSection, navigateTo } = useFullPageScroll(NUM_PAGES, SECTIONS_PER_PAGE);
+  const { containerRef, slidesRef, currentPage, currentSection, navigateTo } =
+    useFullPageScroll(NUM_PAGES, SECTIONS_PER_PAGE);
 
   return (
     <div className="overflow-hidden h-screen">
       <div ref={containerRef}>
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[0] = element)}>
-          <Landing />
+          <Landing navigateTo={navigateTo} />
         </div>
+
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[1] = element)}>
           <Experience />
         </div>
+
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[2] = element)}>
           <Projects />
         </div>
+
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[3] = element)}>
           <Testimonials />
         </div>
+
         <div className="w-full h-screen relative" ref={(element) => (slidesRef.current[4] = element)}>
           <Contact />
         </div>
@@ -35,4 +41,5 @@ const Main = () => {
     </div>
   );
 };
+
 export default Main;

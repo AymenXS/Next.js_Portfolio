@@ -1,49 +1,55 @@
 import Section from '@/shared/Section';
 
-const Introduction = () => {
+const Introduction = ({ navigateTo }) => {
   return (
     <Section isActive={true}>
       <div
         className={
-          // 1) Layout
-          // 2) Positioning
           'relative ' +
-          // 3) Display & Flexbox/Grid
           'flex flex-col items-center justify-center ' +
-          // 4) Spacing
           'gap-y-4 ' +
-          // 5) Sizing
           'h-full w-full ' +
-          // 6) Typography
           'text-center'
-          // 7) Backgrounds
-          // 8) Borders
-          // 9) Effects
-          // 10) Transforms
-          // 11) Transitions & Animations
-          // 12) Interactivity
-          // 13) Accessibility
-          // 14) States
-          // 15) Responsive
-          // 16) Dark Mode
-          // 17) Custom/Misc
         }
       >
-        {/* Interactive Background Placeholder */}
         <p className="text-sm opacity-60">[Particle animation background]</p>
 
-        {/* Hero Title */}
         <h1 className="text-4xl font-bold">Aymen Ghaloua</h1>
 
-        {/* Tagline */}
-        <p className="text-xl">Building intelligent systems that turn complexity into simplicity</p>
+        <p className="text-xl">
+          Building intelligent systems that turn complexity into simplicity
+        </p>
 
-        {/* Primary CTA Buttons */}
-        <div className="flex gap-4 mt-4">
-          <button className="px-4 py-2 border rounded">Download Resume</button>
-          <button className="px-4 py-2 border rounded">Contact Me</button>
-          <button className="px-4 py-2 border rounded">View Work</button>
+        <div className="flex gap-4 mt-4 flex-wrap justify-center">
+          <button
+            className="px-4 py-2 border rounded opacity-60 cursor-not-allowed"
+            disabled
+            type="button"
+          >
+            Download Resume
+          </button>
+
+          <button
+            className="px-4 py-2 border rounded"
+            type="button"
+            onClick={() => navigateTo?.(4)}
+          >
+            Contact Me
+          </button>
+
+          <button
+            className="px-4 py-2 border rounded"
+            type="button"
+            onClick={() => navigateTo?.(2)}
+          >
+            View Work
+          </button>
         </div>
+
+        {/* Deferred note must be visible in UI */}
+        <p className="text-xs opacity-60 mt-2">
+          Resume download — deferred (Phase 4+)
+        </p>
       </div>
     </Section>
   );

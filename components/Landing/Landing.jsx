@@ -1,13 +1,12 @@
 import Introduction from './Introduction';
-import Present from './Present'
-import Future from './Future'
+import Present from './Present';
+import Future from './Future';
 import Approach from './Approach';
 
-
-const Landing = () => {
+const Landing = ({ navigateTo }) => {
   return (
     <>
-      <Introduction />
+      <Introduction navigateTo={navigateTo} />
       <Present />
       <Future />
       <Approach />
