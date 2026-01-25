@@ -15,7 +15,7 @@ const Introduction = () => {
           // 3) Display & Flexbox/Grid
           'flex flex-col items-center justify-center ' +
           // 4) Spacing
-          'gap-y-3 ' +
+          'gap-y-4 ' +
           // 5) Sizing
           'h-full w-full ' +
           // 6) Typography
@@ -33,14 +33,24 @@ const Introduction = () => {
           // 17) Custom/Misc
         }
       >
-        <p>*Don't want much in the beginning to not prevent the interactive background from being overwhelmed; beginning of the refreshing feeling driven experience*</p>
-        <p>- Interactive Background</p>
-        <p>- Title + Tagline Something with AI</p>
-        <p>- Primary CTA button: Resume DL, Contact, Checking</p>
+        {/* Interactive Background Placeholder */}
+        <p className="text-sm opacity-60">[Particle animation background]</p>
 
-        <hr className="w-full my-4" />
+        {/* Hero Title */}
+        <h1 className="text-4xl font-bold">Aymen Ghaloua</h1>
+
+        {/* Tagline */}
+        <p className="text-xl">Building intelligent systems that turn complexity into simplicity</p>
+
+        {/* Primary CTA Buttons */}
+        <div className="flex gap-4 mt-4">
+          <button className="px-4 py-2 border rounded">Download Resume</button>
+          <button className="px-4 py-2 border rounded">Contact Me</button>
+          <button className="px-4 py-2 border rounded">View Work</button>
+        </div>
       </div>
     </Section>
   );
 };
+
 export default Introduction;

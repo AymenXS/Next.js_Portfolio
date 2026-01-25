@@ -1,0 +1,7 @@
+{
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Format commit messages exactly like this:\n\n[Action using Conventional Commits (ADD:, UPDATE:, FEAT:)] : Small description if needed\n- Bullet Point 1\n- Bullet Point 2\n- Bullet Point 3\n\nRules:\n- First line must be: [Action] : <short description>\n- Use 3–8 bullets\n- Bullets must use imperative verbs (Add, Update, Refactor, Fix, Remove, Improve, Implement)\n- Mention key sections/components touched\n- No emojis\n- No extra paragraphs\n- No trailing punctuation on bullets"
+    }
+  ]
+}

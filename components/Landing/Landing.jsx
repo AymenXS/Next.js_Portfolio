@@ -1,17 +1,16 @@
 import Introduction from './Introduction';
-import BentoGridLeft from './BentoGridLeft';
-import BentoGridRight from './BentoGridRight';
+import Present from './Present'
+import Future from './Future'
 import Approach from './Approach';
-import Technologies from './Technologies';
+
 
 const Landing = () => {
   return (
     <>
       <Introduction />
-      <BentoGridLeft />
-      <BentoGridRight />
+      <Present />
+      <Future />
       <Approach />
-      {/* <Technologies /> */}
     </>
   );
 };
