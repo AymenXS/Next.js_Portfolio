@@ -1,12 +1,8 @@
 import Section from '@/shared/Section';
-import ThemeToggle from './ThemeToggle';
 
 const Introduction = () => {
   return (
     <Section isActive={true}>
-      <div className="absolute top-5 right-5 z-30">
-        <ThemeToggle />
-      </div>
       <div
         className={
           // 1) Layout

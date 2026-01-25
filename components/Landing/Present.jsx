@@ -1,5 +1,4 @@
 import Section from '@/shared/Section';
-import { BentoGrid, BentoGridItem } from '../ui/bento-grid';
 
 const Present = () => {
   return (
@@ -26,86 +25,72 @@ const Present = () => {
         // 17) Custom/Misc
       }
     >
-      <BentoGrid className="max-w-[90%]">
-        {/* Card 1: Full-Stack Development */}
-        <BentoGridItem
-          key={1}
-          id={1}
-          title="Full-Stack Development"
-          description="End-to-end web and mobile applications built with modern frameworks and scalable architecture"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">REACT • NEXT.JS • NODE.JS • PYTHON</p>
+      <div className="w-full max-w-[90%] mx-auto flex flex-col gap-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Card 1 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Full-Stack Development</p>
+            <p className="text-sm opacity-60">
+              End-to-end web and mobile applications built with modern frameworks and scalable architecture
+            </p>
+            <p className="text-xs opacity-60 mt-2">REACT • NEXT.JS • NODE.JS • PYTHON</p>
+          </div>
 
-        {/* Card 2: AI/LLM Solutions */}
-        <BentoGridItem
-          key={2}
-          id={2}
-          title="AI/LLM Solutions"
-          description="Intelligent features powered by GPT, Claude, and custom AI models to automate and enhance your applications"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">OPENAI • CLAUDE • LANGCHAIN • HUGGING FACE</p>
+          {/* Card 2 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">AI/LLM Solutions</p>
+            <p className="text-sm opacity-60">
+              Intelligent features powered by GPT, Claude, and custom AI models to automate and enhance your applications
+            </p>
+            <p className="text-xs opacity-60 mt-2">OPENAI • CLAUDE • LANGCHAIN • HUGGING FACE</p>
+          </div>
 
-        {/* Card 3: Automation & Workflows */}
-        <BentoGridItem
-          key={3}
-          id={3}
-          title="Automation & Workflows"
-          description="Streamline repetitive tasks and complex processes with smart automation that saves time and reduces errors"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">ZAPIER • N8N • PYTHON SCRIPTS • APIs</p>
-
-        {/* Center: 3D Sphere Placeholder */}
-        <div className="flex flex-col items-center justify-center p-4 skeleton-box">
-          <p className="font-bold">3D Rotating Technology Sphere</p>
-          <p className="text-sm opacity-60">Visualizing my core tech stack in 3D space</p>
-          <p className="text-xs opacity-40 mt-2">[React, Next.js, Node.js, Python, PostgreSQL, Docker, AWS, TailwindCSS, TypeScript, Redis, OpenAI API, WebGL]</p>
+          {/* Card 3 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Automation & Workflows</p>
+            <p className="text-sm opacity-60">
+              Streamline repetitive tasks and complex processes with smart automation that saves time and reduces errors
+            </p>
+            <p className="text-xs opacity-60 mt-2">ZAPIER • N8N • PYTHON SCRIPTS • APIs</p>
+          </div>
         </div>
 
-        {/* Card 4: Design & UX */}
-        <BentoGridItem
-          key={4}
-          id={4}
-          title="Design & UX"
-          description="Beautiful, intuitive interfaces designed with users in mind—from wireframes to polished design systems"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">FIGMA • ADOBE XD • PROTOTYPING • DESIGN SYSTEMS</p>
+        {/* Center: 3D Sphere Placeholder */}
+        <div className="flex flex-col items-center justify-center p-4 skeleton-box border rounded">
+          <p className="font-bold">3D Rotating Technology Sphere</p>
+          <p className="text-sm opacity-60">Visualizing my core tech stack in 3D space</p>
+          <p className="text-xs opacity-40 mt-2">
+            [React, Next.js, Node.js, Python, PostgreSQL, Docker, AWS, TailwindCSS, TypeScript, Redis, OpenAI API, WebGL]
+          </p>
+        </div>
 
-        {/* Card 5: System Architecture */}
-        <BentoGridItem
-          key={5}
-          id={5}
-          title="System Architecture"
-          description="Scalable, maintainable systems designed with long-term growth and performance in mind"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">DISTRIBUTED SYSTEMS • MICROSERVICES • OPTIMIZATION</p>
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Card 4 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Design & UX</p>
+            <p className="text-sm opacity-60">
+              Beautiful, intuitive interfaces designed with users in mind—from wireframes to polished design systems
+            </p>
+            <p className="text-xs opacity-60 mt-2">FIGMA • ADOBE XD • PROTOTYPING • DESIGN SYSTEMS</p>
+          </div>
 
-        {/* Card 6: Code Quality & Security */}
-        <BentoGridItem
-          key={6}
-          id={6}
-          title="Code Quality & Security"
-          description="Clean, secure, maintainable code with best practices baked in from day one"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">CODE REVIEW • REFACTORING • SECURITY • TESTING</p>
-      </BentoGrid>
+          {/* Card 5 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">System Architecture</p>
+            <p className="text-sm opacity-60">
+              Scalable, maintainable systems designed with long-term growth and performance in mind
+            </p>
+            <p className="text-xs opacity-60 mt-2">DISTRIBUTED SYSTEMS • MICROSERVICES • OPTIMIZATION</p>
+          </div>
+
+          {/* Card 6 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Code Quality & Security</p>
+            <p className="text-sm opacity-60">Clean, secure, maintainable code with best practices baked in from day one</p>
+            <p className="text-xs opacity-60 mt-2">CODE REVIEW • REFACTORING • SECURITY • TESTING</p>
+          </div>
+        </div>
+      </div>
     </Section>
   );
 };

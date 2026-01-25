@@ -1,5 +1,4 @@
 import Section from '@/shared/Section';
-import { BentoGrid, BentoGridItem } from '../ui/bento-grid';
 
 const Future = () => {
   return (
@@ -26,86 +25,69 @@ const Future = () => {
         // 17) Custom/Misc
       }
     >
-      <BentoGrid className="max-w-full">
-        {/* Card 1: Current Exploration */}
-        <BentoGridItem
-          key={1}
-          id={1}
-          title="Current Exploration"
-          description="Diving deep into System Design patterns—learning distributed systems, microservices architecture, and scalable infrastructure design"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">[🔍]</p>
+      <div className="w-full max-w-[90%] mx-auto flex flex-col gap-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Card 1 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Current Exploration</p>
+            <p className="text-sm opacity-60">
+              Diving deep into System Design patterns—learning distributed systems, microservices architecture, and scalable
+              infrastructure design
+            </p>
+            <p className="text-xs opacity-60 mt-2">[🔍]</p>
+          </div>
 
-        {/* Card 2: Latest Skill */}
-        <BentoGridItem
-          key={2}
-          id={2}
-          title="Latest Skill"
-          description="Recently mastered WebGL and 3D web experiences—bringing interactive 3D graphics and immersive visual experiences to the web"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">[✨]</p>
+          {/* Card 2 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Latest Skill</p>
+            <p className="text-sm opacity-60">
+              Recently mastered WebGL and 3D web experiences—bringing interactive 3D graphics and immersive visual experiences
+              to the web
+            </p>
+            <p className="text-xs opacity-60 mt-2">[✨]</p>
+          </div>
 
-        {/* Card 3: Future Direction */}
-        <BentoGridItem
-          key={3}
-          id={3}
-          title="Future Direction"
-          description="Heading towards systems engineering combined with AI-augmented development workflows—building intelligent, scalable systems that leverage AI at their core"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">[🎯]</p>
+          {/* Card 3 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="font-bold">Future Direction</p>
+            <p className="text-sm opacity-60">
+              Heading towards systems engineering combined with AI-augmented development workflows—building intelligent,
+              scalable systems that leverage AI at their core
+            </p>
+            <p className="text-xs opacity-60 mt-2">[🎯]</p>
+          </div>
+        </div>
 
         {/* Center: 3D Globe Placeholder */}
-        <div className="flex flex-col items-center justify-center p-4 skeleton-box">
+        <div className="flex flex-col items-center justify-center p-4 skeleton-box border rounded">
           <p className="font-bold">3D Rotating Globe with Time Zones</p>
           <p className="text-sm opacity-60">Working flexibly across global time zones</p>
           <p className="text-xs opacity-40 mt-2">[UTC-5 to UTC+1 coverage]</p>
         </div>
 
-        {/* Card 4: Years Experience (Metric) */}
-        <BentoGridItem
-          key={4}
-          id={4}
-          title="4+"
-          description="Years Experience"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">[📅]</p>
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Card 4 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="text-2xl font-bold">4+</p>
+            <p className="text-sm opacity-60">Years Experience</p>
+            <p className="text-xs opacity-60 mt-2">[📅]</p>
+          </div>
 
-        {/* Card 5: Projects Delivered (Metric) */}
-        <BentoGridItem
-          key={5}
-          id={5}
-          title="15+"
-          description="Projects Delivered"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">[🚀]</p>
+          {/* Card 5 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="text-2xl font-bold">15+</p>
+            <p className="text-sm opacity-60">Projects Delivered</p>
+            <p className="text-xs opacity-60 mt-2">[🚀]</p>
+          </div>
 
-        {/* Card 6: Technologies Mastered (Metric) */}
-        <BentoGridItem
-          key={6}
-          id={6}
-          title="TBD"
-          description="Technologies Mastered (until I calculate it)"
-          className=""
-          titleClassName="justify-end"
-          spareImg={''}
-        />
-        <p className="text-xs opacity-60">[🛠️]</p>
-      </BentoGrid>
+          {/* Card 6 */}
+          <div className="p-4 border rounded skeleton-box">
+            <p className="text-2xl font-bold">TBD</p>
+            <p className="text-sm opacity-60">Technologies Mastered (until I calculate it)</p>
+            <p className="text-xs opacity-60 mt-2">[🛠️]</p>
+          </div>
+        </div>
+      </div>
     </Section>
   );
 };
