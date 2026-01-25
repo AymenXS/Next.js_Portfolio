@@ -3,100 +3,186 @@
 import { useState } from 'react';
 
 /**
- * DATA (Simple)
+ * DATA (Filled from INFO DEPTH)
+ * Keep the existing component behavior (carousel + modal + hover concept/tech).
  */
 const projects = [
   {
     id: 1,
-    category: 'ONLINE STORE WEBSITE',
+    category: 'E-COMMERCE PLATFORM',
     title: 'SwiftCart',
-    thumbnail: 'placeholder',
+    thumbnail: 'project-swiftcart-thumbnail.png',
     miniDescription:
-      'An expansive online store offering a diverse range of products, providing a smooth and secure shopping experience for customers seeking quality goods and services. Featuring:',
+      'A modern e-commerce platform featuring AI-powered product recommendations, real-time inventory management, and seamless checkout experience. Built to handle 10,000+ concurrent users with 99.9% uptime. Featuring:',
     keyFeatures: [
-      'Feature 1: Responsive design',
-      'Feature 2: Secure checkout',
-      'Feature 3: Product filtering',
-      'Feature 4: User reviews',
+      'AI-powered product recommendations',
+      'Real-time inventory sync',
+      'One-click checkout with Stripe',
+      'Advanced product filtering',
     ],
+    // Concept → tech on hover (matches your existing hover pill logic)
     techStack: [
-      { concept: '3D Animation', tech: 'WebGL' },
-      { concept: 'Framework', tech: 'NextJS' },
-      { concept: 'State Management', tech: 'Redux' },
-      { concept: 'Styling', tech: 'TailwindCSS' },
+      { concept: 'Framework', tech: 'Next.js 14, React 18' },
+      { concept: 'Styling', tech: 'TailwindCSS, Framer Motion' },
+      { concept: 'Backend', tech: 'Node.js, Express, REST API' },
+      { concept: 'Database', tech: 'PostgreSQL, Redis (caching)' },
+      { concept: 'Payment', tech: 'Stripe API' },
+      { concept: 'Deployment', tech: 'Vercel, AWS S3' },
     ],
+
+    // Modal-specific
+    modalTitle: 'SwiftCart - AI-Powered E-Commerce Platform',
+    modalMiniDescription:
+      'A scalable e-commerce solution serving 10,000+ monthly users with AI-driven personalization.',
+    liveDemoUrl: '#',
+
+    // Modal sections
     problem:
-      'Customers needed a reliable store experience with a clear browsing flow, predictable shopping cart behavior, and trustworthy checkout steps. Many store experiences feel cluttered, slow, or confusing, especially on mobile.',
+      'Small businesses struggle with managing online inventory across multiple sales channels, leading to overselling and poor customer experience. Traditional e-commerce platforms are either too expensive or lack real-time sync capabilities.',
     answer:
-      'The solution focuses on clear hierarchy and frictionless navigation, backed by predictable state management for cart actions and a consistent UI system. The checkout flow is simplified to reduce drop-off and improve confidence.',
+      'SwiftCart provides real-time inventory management with automatic syncing across all sales channels, AI-powered stock predictions to prevent overselling, and a user-friendly admin dashboard. The platform scales affordably from startups to mid-size businesses.',
     visualDesign: [
-      'Modern minimalist interface',
-      'Clear hierarchy and spacing',
+      'Modern minimalist design with generous whitespace',
+      'Smooth page transitions (Framer Motion)',
+      'Intuitive product filtering with instant feedback',
       'Mobile-first responsive layout',
-      'Consistent component styling',
-      'Readable typography and CTAs',
+      '3D product viewer (WebGL) for richer browsing',
+      'One-click checkout to reduce abandonment',
     ],
     architecture: [
-      'RESTful API integration',
-      'Client state for cart + user flow',
-      'Separation of UI vs data concerns',
-      'Caching / performance considerations',
-      'Scalable folder structure',
+      'Microservices architecture (products, orders, payments, inventory)',
+      'RESTful API design with versioning/documentation',
+      'Redis caching layer to reduce DB load and improve response time',
+      'PostgreSQL with indexing for fast product search',
+      'Stripe integration with webhook handling',
+      'Real-time inventory sync via WebSockets',
     ],
-    standoutSections: ['3D product viewer', 'AI-powered recommendations'],
+    standoutSections: [
+      'AI product recommendations',
+      'Abandoned cart recovery emails',
+      'Admin analytics dashboard',
+    ],
     metrics: { performance: 95, accessibility: 98, bestPractices: 92, seo: 100 },
+    extraMetrics: {
+      pageLoadTime: '1.2s (average)',
+      conversionRate: '+35% improvement',
+    },
   },
+
   {
     id: 2,
-    category: 'PORTFOLIO WEBSITE',
-    title: 'Project Title 2',
-    thumbnail: 'placeholder',
+    category: 'AI/LLM SOLUTION',
+    title: 'BotForge',
+    thumbnail: 'project-botforge-thumbnail.png',
     miniDescription:
-      'A modern portfolio showcasing projects with a strong visual hierarchy and smooth navigation. Built for clarity and conversion. Featuring:',
+      'A no-code platform for building custom AI chatbots powered by GPT-4 and Claude. Businesses can create, train, and deploy conversational AI without writing code. Featuring:',
     keyFeatures: [
-      'Feature 1: Clean sections',
-      'Feature 2: Fast navigation',
-      'Feature 3: Project modals',
-      'Feature 4: Responsive layout',
+      'Drag-and-drop chatbot builder',
+      'Multi-LLM support (GPT-4, Claude)',
+      'Custom knowledge base training',
+      'Analytics dashboard',
     ],
     techStack: [
-      { concept: '3D Animation', tech: 'Three.js' },
-      { concept: 'Framework', tech: 'NextJS' },
-      { concept: 'State Management', tech: 'Zustand' },
-      { concept: 'Styling', tech: 'TailwindCSS' },
+      { concept: 'Framework', tech: 'Next.js 14, TypeScript' },
+      { concept: 'AI/LLM', tech: 'OpenAI API, Claude API, LangChain' },
+      { concept: 'Backend', tech: 'Python, FastAPI, Celery (async tasks)' },
+      { concept: 'Database', tech: 'MongoDB, Pinecone (vector DB)' },
+      { concept: 'Deployment', tech: 'Docker, AWS ECS, CloudFront' },
     ],
-    problem: 'Problem description goes here...',
-    answer: 'Solution description goes here...',
-    visualDesign: ['Point 1', 'Point 2', 'Point 3', 'Point 4'],
-    architecture: ['Point 1', 'Point 2', 'Point 3', 'Point 4'],
-    standoutSections: ['Section 1', 'Section 2'],
-    metrics: { performance: 90, accessibility: 96, bestPractices: 93, seo: 99 },
+
+    modalTitle: 'BotForge - No-Code AI Chatbot Platform',
+    modalMiniDescription:
+      'A no-code interface to create, train, and deploy business chatbots in minutes, with multi-model support and scalable RAG.',
+    liveDemoUrl: '#',
+
+    problem:
+      'Businesses need custom AI chatbots but lack technical expertise and find existing solutions too expensive or inflexible.',
+    answer:
+      'BotForge provides a no-code interface where users build conversation flows, connect data sources, and deploy chatbots quickly. It supports multiple AI models and scales automatically.',
+    visualDesign: [
+      'Drag-and-drop flow builder UI',
+      'Real-time chat preview',
+      'Dark/Light mode support',
+      'Responsive analytics dashboard',
+      'Clean component hierarchy for complex screens',
+      'Fast navigation across builder steps',
+    ],
+    architecture: [
+      'Microservices with FastAPI',
+      'Async task processing with Celery',
+      'Vector embeddings for semantic search',
+      'RAG (Retrieval-Augmented Generation) pipeline',
+      'Rate limiting + caching for cost control',
+      'Observability: logs/metrics for quality monitoring',
+    ],
+    standoutSections: [
+      'Multi-LLM routing (GPT-4 / Claude)',
+      'Knowledge base ingestion + chunking',
+      'Conversation analytics + feedback loops',
+    ],
+    metrics: { performance: 90, accessibility: 96, bestPractices: 93, seo: 98 },
+    extraMetrics: {
+      pageLoadTime: '1.5s (average)',
+      deployments: '500+ chatbots deployed',
+    },
   },
+
   {
     id: 3,
-    category: 'DASHBOARD APP',
-    title: 'Project Title 3',
-    thumbnail: 'placeholder',
+    category: 'AUTOMATION TOOL',
+    title: 'FlowMate',
+    thumbnail: 'project-flowmate-thumbnail.png',
     miniDescription:
-      'A dashboard that surfaces insights quickly and keeps workflows simple for daily use. Built with maintainability in mind. Featuring:',
+      'Workflow automation platform connecting 100+ apps without code. Automate repetitive tasks, sync data across platforms, and save 15+ hours per week. Featuring:',
     keyFeatures: [
-      'Feature 1: Data overview',
-      'Feature 2: Filters',
-      'Feature 3: Exports',
-      'Feature 4: Auth roles',
+      'Visual workflow builder',
+      '100+ app integrations',
+      'Scheduled triggers',
+      'Error handling & retry logic',
     ],
     techStack: [
-      { concept: '3D Animation', tech: 'None' },
-      { concept: 'Framework', tech: 'React' },
-      { concept: 'State Management', tech: 'Redux' },
-      { concept: 'Styling', tech: 'CSS Modules' },
+      { concept: 'Framework', tech: 'React, Next.js' },
+      { concept: 'Backend', tech: 'Node.js, Express, Bull (job queue)' },
+      { concept: 'Database', tech: 'MongoDB, Redis' },
+      { concept: 'Integrations', tech: 'Zapier API, REST APIs, Webhooks' },
+      { concept: 'Deployment', tech: 'Vercel, Railway' },
     ],
-    problem: 'Problem description goes here...',
-    answer: 'Solution description goes here...',
-    visualDesign: ['Point 1', 'Point 2', 'Point 3', 'Point 4'],
-    architecture: ['Point 1', 'Point 2', 'Point 3', 'Point 4'],
-    standoutSections: ['Section 1', 'Section 2'],
-    metrics: { performance: 92, accessibility: 97, bestPractices: 91, seo: 98 },
+
+    modalTitle: 'FlowMate - Workflow Automation Platform',
+    modalMiniDescription:
+      'A visual automation builder that connects tools, schedules jobs, and handles retries so teams save hours every week.',
+    liveDemoUrl: '#',
+
+    problem:
+      'Teams waste time on repetitive tasks and manual data syncing across tools, causing delays, errors, and inconsistent records.',
+    answer:
+      'FlowMate centralizes automation in one visual builder, adds durable job processing and retries, and connects dozens of integrations through APIs and webhooks.',
+    visualDesign: [
+      'Node-based visual workflow builder',
+      'Clear states for success/failure',
+      'Readable logs and execution history',
+      'Simple templates for common workflows',
+      'Responsive layout for daily use',
+      'Minimal friction for creating automations',
+    ],
+    architecture: [
+      'Durable job queue (Bull) for scheduled + async tasks',
+      'Retry logic + dead-letter handling for failures',
+      'Webhook-based triggers for real-time events',
+      'Redis for queues/caching; MongoDB for config + history',
+      'Secure credential storage patterns (placeholder)',
+      'Extensible integration adapters layer',
+    ],
+    standoutSections: [
+      'Error handling + retry pipeline',
+      'Reusable integration templates',
+      'Execution logs + debugging view',
+    ],
+    metrics: { performance: 92, accessibility: 97, bestPractices: 91, seo: 97 },
+    extraMetrics: {
+      timeSaved: '15+ hours/week (typical team)',
+      integrations: '100+ apps',
+    },
   },
 ];
 
@@ -155,11 +241,14 @@ const Projects = () => {
         {/* Page Title */}
         <header className="text-center">
           <h1 className="text-4xl font-bold">Latest Projects</h1>
+          <p className="mt-2 text-sm opacity-70">
+            Explore my recent work and case studies
+          </p>
         </header>
 
         {/* Carousel Section (relative so modal overlay covers ONLY this section) */}
         <section className="relative mt-10 border rounded-2xl skeleton-box p-8">
-          {/* 2.1 Layout: Left 40 / Right 60 */}
+          {/* Layout: Left 40 / Right 60 */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center">
             {/* Left (~40%) */}
             <div className="lg:col-span-2">
@@ -206,13 +295,13 @@ const Projects = () => {
                 onClick={openModal}
               >
                 <div className="aspect-video border rounded-xl skeleton-box flex items-center justify-center opacity-70">
-                  Project Preview Placeholder (click to open modal)
+                  {currentProject.thumbnail} (16:9) — click to open modal
                 </div>
               </button>
             </div>
           </div>
 
-          {/* 2.4 Navigation Controls */}
+          {/* Navigation Controls */}
           <div className="mt-12 flex items-center justify-center gap-6">
             {/* Left Arrow */}
             <button
@@ -242,9 +331,8 @@ const Projects = () => {
                   />
                 );
               })}
-              {/* Optional label placeholder */}
               <span className="ml-2 text-xs opacity-70">
-                All • {currentIndex + 1}/{projects.length}
+                {currentIndex + 1} of {projects.length}
               </span>
             </div>
 
@@ -260,26 +348,27 @@ const Projects = () => {
             </button>
           </div>
 
-          {/* 4. ALL PROJECTS Button */}
+          {/* VIEW ALL PROJECTS Button */}
           <div className="mt-10 flex justify-center">
-            <button type="button" className="px-6 py-3 border rounded-xl skeleton-box">
-              ALL PROJECTS
-            </button>
+            <a
+              href="/projects"
+              className="px-6 py-3 border rounded-xl skeleton-box"
+            >
+              VIEW ALL PROJECTS
+            </a>
           </div>
 
-          {/* 3. Project Modal (covers ONLY this Projects section) */}
+          {/* Project Modal (covers ONLY this Projects section) */}
           {isModalOpen && (
             <div className="absolute inset-0 z-50">
               {/* Backdrop */}
               <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
 
-              {/* Panel (absolute center via translate) */}
+              {/* Panel */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(1200px,85vw)] border rounded-2xl bg-bg skeleton-box">
-                {/* Inner scroll container */}
                 <div className="max-h-[70vh] overflow-y-auto p-6">
                   {/* Modal Header */}
                   <header className="relative">
-                    {/* Close button top-right */}
                     <button
                       type="button"
                       className="absolute right-0 top-0 px-3 py-1 border rounded-lg"
@@ -288,9 +377,9 @@ const Projects = () => {
                       Close
                     </button>
 
-                    {/* Interactive Concepts row */}
+                    {/* Tech Stack Pills (top row) — concept→tech hover preserved */}
                     <div className="text-xs opacity-80">
-                      <span className="font-semibold">CONCEPTS</span>
+                      <span className="font-semibold">TECH STACK</span>
                       <span className="opacity-70"> | </span>
 
                       {currentProject.techStack.map((t, idx) => {
@@ -316,19 +405,26 @@ const Projects = () => {
                     {/* Title + Description + CTA */}
                     <div className="mt-4 flex items-start justify-between gap-6">
                       <div>
-                        <h3 className="text-3xl font-extrabold">{currentProject.title}</h3>
+                        <h3 className="text-3xl font-extrabold">
+                          {currentProject.modalTitle || currentProject.title}
+                        </h3>
                         <p className="mt-2 text-sm opacity-80 max-w-2xl">
-                          {currentProject.miniDescription}
+                          {currentProject.modalMiniDescription || currentProject.miniDescription}
                         </p>
                       </div>
 
-                      <button type="button" className="px-4 py-2 border rounded-xl">
-                        Live Demo
-                      </button>
+                      <a
+                        href={currentProject.liveDemoUrl || '#'}
+                        className="px-4 py-2 border rounded-xl"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View Live Demo →
+                      </a>
                     </div>
                   </header>
 
-                  {/* Modal Content Sections */}
+                  {/* Modal Content */}
                   <div className="mt-8 flex flex-col gap-8">
                     {/* A. Media */}
                     <section>
@@ -397,7 +493,8 @@ const Projects = () => {
 
                     {/* D. Metrics */}
                     <section>
-                      <h4 className="font-bold">Performance Metrics / Lighthouse Scores</h4>
+                      <h4 className="font-bold">Project Metrics</h4>
+
                       <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="border rounded-xl skeleton-box p-4">
                           <p className="text-sm font-semibold">Performance</p>
@@ -422,14 +519,44 @@ const Projects = () => {
                           <p className="mt-2 text-2xl font-bold">{currentProject.metrics.seo}</p>
                         </div>
                       </div>
+
+                      {/* Extra metrics from INFO DEPTH */}
+                      {currentProject.extraMetrics ? (
+                        <div className="mt-4 border rounded-xl skeleton-box p-4 text-sm opacity-85">
+                          {Object.entries(currentProject.extraMetrics).map(([k, v]) => (
+                            <p key={k}>
+                              <span className="font-semibold">
+                                {k === 'pageLoadTime'
+                                  ? 'Page Load Time'
+                                  : k === 'conversionRate'
+                                    ? 'Conversion Rate'
+                                    : k === 'deployments'
+                                      ? 'Deployments'
+                                      : k === 'timeSaved'
+                                        ? 'Time Saved'
+                                        : k === 'integrations'
+                                          ? 'Integrations'
+                                          : k}
+                                :
+                              </span>{' '}
+                              {v}
+                            </p>
+                          ))}
+                        </div>
+                      ) : null}
                     </section>
 
-                    {/* E. Bottom CTA */}
+                    {/* Bottom CTA */}
                     <footer className="pt-2 pb-2">
                       <div className="flex justify-center">
-                        <button type="button" className="px-8 py-3 border rounded-xl">
-                          Live Demo
-                        </button>
+                        <a
+                          href={currentProject.liveDemoUrl || '#'}
+                          className="px-8 py-3 border rounded-xl"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          View Live Demo →
+                        </a>
                       </div>
                     </footer>
                   </div>

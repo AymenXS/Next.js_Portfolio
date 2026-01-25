@@ -90,6 +90,10 @@ const Present = () => {
             <p className="text-xs opacity-60 mt-2">CODE REVIEW • REFACTORING • SECURITY • TESTING</p>
           </div>
         </div>
+        <p className="text-xs opacity-60">
+          Note: Detailed breakdowns for each capability (Frontend/Backend/etc.) will be added in Phase 3.
+        </p>
+
       </div>
     </Section>
   );

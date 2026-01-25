@@ -1,17 +1,36 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+
 const contactInfo = {
-  email: 'your.email@example.com',
-  location: 'Your City, Country',
-  whatsapp: '+1 (123) 456-7890',
+  email: 'aymenghaloua@gmail.com',
+  location: 'Marrakesh/Safi, Morocco',
+  whatsapp: '+212 621-23-21-83',
   socials: {
-    github: 'github.com/yourusername',
+    github: 'github.com/AymenXS',
+    linkedin: 'linkedin.com/in/ghaloua-aymen',
   },
 };
 
 // Availability is set by you from database (not user input)
-const availability = 'Available'; // or "In Project"
+const availability = 'Available for Projects'; // or "In Project"
 
 const Contact = () => {
-  const whatsappDigits = contactInfo.whatsapp.replace(/[^\d]/g, ''); // simple helper for wa.me
+  const whatsappDigits = useMemo(
+    () => contactInfo.whatsapp.replace(/[^\d]/g, ''),
+    []
+  );
+
+  // Phase-2: static UI + validation-only UX (submission logic in Phase 3)
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+  const isAvailable = availability.toLowerCase().includes('available');
+
+  const canSubmit =
+    firstName.trim() && lastName.trim() && email.trim() && message.trim();
 
   return (
     <div className="bg-bg text-text skeleton-section w-full min-h-screen">
@@ -24,22 +43,34 @@ const Contact = () => {
             <h1 className="text-4xl font-bold">Contact Me</h1>
             <p className="mt-2 text-sm opacity-80">
               Or reach me via:{' '}
-              <a
-                className="underline"
-                href={`mailto:${contactInfo.email}`}
-              >
+              <a className="underline" href={`mailto:${contactInfo.email}`}>
                 {contactInfo.email}
               </a>
             </p>
           </header>
 
-          {/* Availability display (not a field) */}
+          {/* Availability display */}
           <div className="mt-8 border rounded-2xl skeleton-box p-5">
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 text-xs border rounded-full skeleton-chip">
-                Currently: {availability}
+              <span className="text-xs opacity-70">Current Status</span>
+
+              <span
+                className={[
+                  'px-3 py-1 text-xs rounded-full',
+                  isAvailable
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-amber-500 text-black',
+                ].join(' ')}
+                title={
+                  isAvailable
+                    ? 'Available for Projects'
+                    : 'In Project'
+                }
+              >
+                {availability}
               </span>
             </div>
+
             <p className="mt-2 text-xs opacity-70">
               This status is updated by me from the database
             </p>
@@ -49,18 +80,23 @@ const Contact = () => {
           <section className="mt-8 border rounded-2xl skeleton-box p-6">
             <h2 className="text-lg font-bold">Send a Message</h2>
 
-            <form className="mt-6 grid gap-4" onSubmit={(e) => e.preventDefault()}>
-              {/* First / Last name (2 columns) */}
+            <form
+              className="mt-6 grid gap-4"
+              onSubmit={(e) => e.preventDefault()}
+            >
+              {/* Row 1: First / Last name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* First Name */}
                 <div className="relative">
                   <input
                     className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box"
                     placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     required
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-70">
-                    [Icon]
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
+                    👤
                   </span>
                 </div>
 
@@ -69,36 +105,42 @@ const Contact = () => {
                   <input
                     className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box"
                     placeholder="Last Name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     required
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-70">
-                    [Icon]
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
+                    👤
                   </span>
                 </div>
               </div>
 
-              {/* Email */}
+              {/* Row 2: Email */}
               <div className="relative">
                 <input
                   type="email"
                   className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box"
                   placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-70">
-                  [Icon]
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
+                  ✉️
                 </span>
               </div>
 
-              {/* Message */}
+              {/* Row 3: Message */}
               <div className="relative">
                 <textarea
-                  className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box min-h-[220px]"
+                  className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box min-h-[260px]"
                   placeholder="Message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   required
                 />
-                <span className="absolute right-3 top-4 text-xs opacity-70">
-                  [Icon]
+                <span className="absolute right-3 top-4 text-sm opacity-80">
+                  💬
                 </span>
               </div>
 
@@ -106,7 +148,8 @@ const Contact = () => {
               <div className="flex justify-center pt-2">
                 <button
                   type="submit"
-                  className="px-10 py-3 border rounded-full"
+                  className="px-10 py-3 border rounded-full disabled:opacity-40"
+                  disabled={!canSubmit}
                 >
                   Submit
                 </button>
@@ -115,7 +158,7 @@ const Contact = () => {
 
             {/* Visible future note (not code comment) */}
             <p className="mt-4 text-xs opacity-70">
-              Form submission logic will be added later
+              Form submission logic will be added in Phase 3 (SendGrid/Resend + success/error handling).
             </p>
           </section>
 
@@ -126,7 +169,7 @@ const Contact = () => {
             <div className="mt-5 grid gap-3 text-sm">
               {/* Email */}
               <div className="flex items-center gap-3">
-                <span className="text-xs opacity-70">[Email Icon]</span>
+                <span className="text-sm opacity-80">✉️</span>
                 <a className="underline" href={`mailto:${contactInfo.email}`}>
                   {contactInfo.email}
                 </a>
@@ -134,13 +177,13 @@ const Contact = () => {
 
               {/* Location */}
               <div className="flex items-center gap-3">
-                <span className="text-xs opacity-70">[Location Icon]</span>
+                <span className="text-sm opacity-80">📍</span>
                 <span>{contactInfo.location}</span>
               </div>
 
               {/* WhatsApp */}
               <div className="flex items-center gap-3">
-                <span className="text-xs opacity-70">[WhatsApp Icon]</span>
+                <span className="text-sm opacity-80">📱</span>
                 <a
                   className="underline"
                   href={`https://wa.me/${whatsappDigits}`}
@@ -154,18 +197,45 @@ const Contact = () => {
               {/* Socials */}
               <div className="pt-2">
                 <p className="text-sm font-semibold">Connect with me:</p>
-                <div className="mt-2 flex items-center gap-3">
-                  <button type="button" className="px-3 py-2 border rounded-xl skeleton-box">
-                    [GitHub Icon]
-                  </button>
-                  <a
-                    className="underline"
-                    href={`https://${contactInfo.socials.github}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {contactInfo.socials.github}
-                  </a>
+
+                <div className="mt-2 flex flex-col gap-3">
+                  {/* GitHub */}
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="px-3 py-2 border rounded-xl skeleton-box"
+                      aria-label="GitHub"
+                    >
+                      GitHub
+                    </button>
+                    <a
+                      className="underline"
+                      href={`https://${contactInfo.socials.github}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {contactInfo.socials.github}
+                    </a>
+                  </div>
+
+                  {/* LinkedIn */}
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="px-3 py-2 border rounded-xl skeleton-box"
+                      aria-label="LinkedIn"
+                    >
+                      LinkedIn
+                    </button>
+                    <a
+                      className="underline"
+                      href={`https://${contactInfo.socials.linkedin}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {contactInfo.socials.linkedin}
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -180,6 +250,9 @@ const Contact = () => {
               <li>Estimated Budget (range selector)</li>
               <li>AI-powered pre-detailed form for better context gathering</li>
             </ul>
+            <p className="mt-3 text-xs opacity-70">
+              These features will help streamline the initial conversation and ensure we focus on what matters most.
+            </p>
           </section>
         </section>
 
