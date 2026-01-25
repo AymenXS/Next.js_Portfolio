@@ -9,6 +9,16 @@ function normalizeExperience(item) {
     return Number.isNaN(d.getTime()) ? null : d.toISOString();
   };
 
+  // Contentful field IDs (snake_case)
+  const jobTitle = typeof f.job_title === 'string' ? f.job_title : '';
+  const company = typeof f.company === 'string' ? f.company : '';
+  const location = typeof f.location === 'string' ? f.location : '';
+  const locationMode = typeof f.location_mode === 'string' ? f.location_mode : '';
+
+  const startDate = toIso(f.start_date);
+  const endDate = toIso(f.end_date);
+
+  // tasks JSON: [{ title, descriptions: [] }]
   const tasksRaw = Array.isArray(f.tasks) ? f.tasks : [];
   const tasks = tasksRaw
     .filter(Boolean)
@@ -24,26 +34,30 @@ function normalizeExperience(item) {
       return { title, descriptions };
     })
     .filter((t) => (typeof t === 'string' ? t : t.title || t.descriptions?.length));
-  const techGroups = Array.isArray(f.techGroups) ? f.techGroups : [];
+
+  // techGroups JSON field id is tech_groups
+  const techGroupsRaw = Array.isArray(f.tech_groups) ? f.tech_groups : [];
+  const techGroups = techGroupsRaw
+    .filter(Boolean)
+    .map((g) => ({
+      label: typeof g?.label === 'string' ? g.label : '',
+      items: Array.isArray(g?.items) ? g.items.filter((x) => typeof x === 'string' && x.trim()) : [],
+    }))
+    .filter((g) => g.label && g.items.length);
 
   return {
     id: item?.sys?.id || null,
-    jobTitle: f.jobTitle || '',
-    company: f.company || '',
-    location: f.location || '',
-    locationMode: f.locationMode || '',
-    startDate: toIso(f.startDate),
-    endDate: toIso(f.endDate),
-    techGroups: techGroups
-      .filter(Boolean)
-      .map((g) => ({
-        label: typeof g?.label === 'string' ? g.label : '',
-        items: Array.isArray(g?.items) ? g.items.filter((x) => typeof x === 'string' && x.trim()) : [],
-      }))
-      .filter((g) => g.label && g.items.length),
-    tasks: tasks,
+    jobTitle,
+    company,
+    location,
+    locationMode,
+    startDate,
+    endDate,
+    techGroups,
+    tasks,
   };
 }
+
 
 export async function GET() {
   try {
@@ -52,7 +66,7 @@ export async function GET() {
     const data = await fetchContentfulEntries({
       contentType,
       // Desc by startDate
-      order: '-fields.startDate',
+      order: '-fields.start_date',
     });
 
     const items = Array.isArray(data?.items) ? data.items.map(normalizeExperience).filter((x) => x.id) : [];
