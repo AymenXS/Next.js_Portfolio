@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * DATA (Filled from INFO DEPTH)
  * Keep the existing component behavior (carousel + modal + hover concept/tech).
  */
-const projects = [
+const fallbackProjects = [
   {
     id: 1,
     category: 'E-COMMERCE PLATFORM',
@@ -207,6 +207,11 @@ const TechPill = ({ concept, tech, isHovered, onEnter, onLeave }) => {
 };
 
 const Projects = () => {
+  // Data (CMS-first; fallback to local seed if API is empty/unavailable)
+  const [projects, setProjects] = useState(fallbackProjects);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
   // Carousel state
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -217,7 +222,47 @@ const Projects = () => {
   const [hoveredPillIndex, setHoveredPillIndex] = useState(null);
   const [hoveredModalConceptIndex, setHoveredModalConceptIndex] = useState(null);
 
-  const currentProject = projects[currentIndex];
+useEffect(() => {
+  let isMounted = true;
+
+  const run = async () => {
+    try {
+      setIsLoading(true);
+      setLoadError('');
+
+      const res = await fetch('/api/projects');
+      const json = await res.json().catch(() => null);
+
+      if (!isMounted) return;
+
+      if (!res.ok || !json?.ok) {
+        setLoadError(json?.error || 'Failed to load projects');
+        return;
+      }
+
+      const items = Array.isArray(json?.items) ? json.items : [];
+      if (items.length) {
+        setProjects(items);
+        setCurrentIndex(0);
+      }
+    } catch (err) {
+      if (!isMounted) return;
+      setLoadError(err?.message || 'Failed to load projects');
+    } finally {
+      if (!isMounted) return;
+      setIsLoading(false);
+    }
+  };
+
+  run();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
+
+  const currentProject = projects[currentIndex] || {};
 
   const onPrev = () => {
     if (currentIndex === 0) return;
@@ -245,6 +290,14 @@ const Projects = () => {
             Explore my recent work and case studies
           </p>
         </header>
+
+        {/* Data Status (Phase 3) */}
+        {(isLoading || loadError) && (
+          <p className="mt-4 text-center text-sm opacity-70">
+            {isLoading ? 'Loading projects…' : `Projects load issue: ${loadError} (showing fallback)`}
+          </p>
+        )}
+
 
         {/* Carousel Section (relative so modal overlay covers ONLY this section) */}
         <section className="relative mt-10 border rounded-2xl skeleton-box p-8">
