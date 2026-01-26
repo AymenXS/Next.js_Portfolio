@@ -85,7 +85,7 @@ const Present = () => {
 
           {/* Card 6 */}
           <div className="p-4 border rounded skeleton-box">
-            <p className="font-bold">Code Quality & Security</p>
+            <p className="font-bold">Security & Code Quality</p>
             <p className="text-sm opacity-60">Clean, secure, maintainable code with best practices baked in from day one</p>
             <p className="text-xs opacity-60 mt-2">CODE REVIEW • REFACTORING • SECURITY • TESTING</p>
           </div>

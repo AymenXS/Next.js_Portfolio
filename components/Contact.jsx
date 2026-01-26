@@ -12,7 +12,7 @@ const contactInfo = {
   },
 };
 
-// Availability is set by you from database (not user input)
+// Availability is set by you (hardcoded in Phase 3)
 const availability = 'Available for Projects'; // or "In Project"
 
 const Contact = () => {
@@ -21,16 +21,61 @@ const Contact = () => {
     []
   );
 
-  // Phase-2: static UI + validation-only UX (submission logic in Phase 3)
+  // Phase-3: real submission logic + states
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
+  const [submitting, setSubmitting] = useState(false);
+  const [submitOk, setSubmitOk] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
   const isAvailable = availability.toLowerCase().includes('available');
 
   const canSubmit =
     firstName.trim() && lastName.trim() && email.trim() && message.trim();
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    // reset banners
+    setSubmitOk(false);
+    setSubmitError('');
+
+    if (!canSubmit || submitting) return;
+
+    try {
+      setSubmitting(true);
+
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          email: email.trim(),
+          message: message.trim(),
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error || 'Failed to send message.');
+      }
+
+      setSubmitOk(true);
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setMessage('');
+    } catch (err) {
+      setSubmitError(err?.message || 'Failed to send message.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="bg-bg text-text skeleton-section w-full min-h-screen">
@@ -61,11 +106,7 @@ const Contact = () => {
                     ? 'bg-emerald-600 text-white'
                     : 'bg-amber-500 text-black',
                 ].join(' ')}
-                title={
-                  isAvailable
-                    ? 'Available for Projects'
-                    : 'In Project'
-                }
+                title={isAvailable ? 'Available for Projects' : 'In Project'}
               >
                 {availability}
               </span>
@@ -80,10 +121,27 @@ const Contact = () => {
           <section className="mt-8 border rounded-2xl skeleton-box p-6">
             <h2 className="text-lg font-bold">Send a Message</h2>
 
-            <form
-              className="mt-6 grid gap-4"
-              onSubmit={(e) => e.preventDefault()}
-            >
+            {/* Status banner (Phase 3) */}
+            {(submitOk || submitError) && (
+              <div
+                className={[
+                  'mt-4 border rounded-xl skeleton-box p-4 text-sm',
+                  submitOk
+                    ? 'border-emerald-500/40'
+                    : 'border-rose-500/40',
+                ].join(' ')}
+              >
+                {submitOk ? (
+                  <p className="opacity-90">
+                    Message sent. I’ll get back to you soon.
+                  </p>
+                ) : (
+                  <p className="opacity-90">Error: {submitError}</p>
+                )}
+              </div>
+            )}
+
+            <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
               {/* Row 1: First / Last name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* First Name */}
@@ -94,6 +152,7 @@ const Contact = () => {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
+                    disabled={submitting}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
                     👤
@@ -108,6 +167,7 @@ const Contact = () => {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
+                    disabled={submitting}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
                     👤
@@ -124,6 +184,7 @@ const Contact = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={submitting}
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
                   ✉️
@@ -138,6 +199,7 @@ const Contact = () => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   required
+                  disabled={submitting}
                 />
                 <span className="absolute right-3 top-4 text-sm opacity-80">
                   💬
@@ -149,16 +211,17 @@ const Contact = () => {
                 <button
                   type="submit"
                   className="px-10 py-3 border rounded-full disabled:opacity-40"
-                  disabled={!canSubmit}
+                  disabled={!canSubmit || submitting}
                 >
-                  Submit
+                  {submitting ? 'Sending…' : 'Submit'}
                 </button>
               </div>
             </form>
 
-            {/* Visible future note (not code comment) */}
+            {/* Visible future note (still true, but now submission exists) */}
             <p className="mt-4 text-xs opacity-70">
-              Form submission logic will be added in Phase 3 (SendGrid/Resend + success/error handling).
+              Phase 3: submission wired (email delivery + success/error). Phase 4
+              adds spam prevention and storage.
             </p>
           </section>
 
@@ -251,7 +314,8 @@ const Contact = () => {
               <li>AI-powered pre-detailed form for better context gathering</li>
             </ul>
             <p className="mt-3 text-xs opacity-70">
-              These features will help streamline the initial conversation and ensure we focus on what matters most.
+              These features will help streamline the initial conversation and
+              ensure we focus on what matters most.
             </p>
           </section>
         </section>
@@ -280,7 +344,9 @@ const Contact = () => {
               }}
             >
               <div>
-                <p className="text-lg font-semibold opacity-80">Image Placeholder</p>
+                <p className="text-lg font-semibold opacity-80">
+                  Image Placeholder
+                </p>
                 <p className="mt-2 text-sm opacity-70">
                   TODO: Add animated image/AI-generated design
                 </p>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const Testimonials = () => {
   // 'none' | 'guest' | 'linkedin' | 'github' | 'google'
@@ -38,70 +38,6 @@ const Testimonials = () => {
           ? 'border-emerald-500/40 text-emerald-300'
           : 'border-white/20 text-white/80';
 
-  // Right-side example testimonials (INFO DEPTH)
-  const testimonialExamples = [
-    {
-      id: 't1',
-      avatar: 'profile-sarah-thompson.jpg',
-      name: 'Sarah Thompson',
-      website: 'techwizard.com',
-      platform: 'linkedin',
-      platformLabel: 'LinkedIn',
-      platformIcon: 'in',
-      message:
-        "Aymen's work on our project was exceptional. His attention to detail and innovative solutions greatly improved our web application's performance and user experience. Would definitely work with him again!",
-      timestamp: '2 days ago',
-    },
-    {
-      id: 't2',
-      avatar: 'default-avatar.png',
-      name: 'Michael Rodriguez',
-      website: 'N/A',
-      platform: 'guest',
-      platformLabel: 'Guest',
-      platformIcon: 'guest',
-      message:
-        'Quick turnaround and excellent communication throughout the project. Aymen delivered exactly what we needed and was very responsive to feedback.',
-      timestamp: '1 week ago',
-    },
-    {
-      id: 't3',
-      avatar: 'github-profile-picture (auto)',
-      name: 'Emily Chen',
-      website: 'github.com/emilychen',
-      platform: 'github',
-      platformLabel: 'GitHub',
-      platformIcon: 'gh',
-      message:
-        "Aymen's ability to translate complex requirements into elegant code is remarkable. He's a valuable asset to any development team. Highly recommended!",
-      timestamp: '3 days ago',
-    },
-    {
-      id: 't4',
-      avatar: 'google-profile-picture (auto)',
-      name: 'David Park',
-      website: 'davidpark.dev',
-      platform: 'google',
-      platformLabel: 'Google',
-      platformIcon: 'G',
-      message:
-        'Professional, skilled, and easy to work with. Aymen helped us build a complex e-commerce platform and delivered beyond our expectations. The site runs smoothly and our customers love it.',
-      timestamp: '5 days ago',
-    },
-    {
-      id: 't5',
-      avatar: 'custom-uploaded-image',
-      name: 'Lisa Nakamura',
-      website: 'designhub.co',
-      platform: 'guest',
-      platformLabel: 'Guest',
-      platformIcon: 'guest',
-      message:
-        "Aymen's dedication to clean, efficient code and his collaborative approach made our project a success. Communication was excellent throughout.",
-      timestamp: '1 week ago',
-    },
-  ];
-
   const platformBadgeClass = (platform) => {
     if (platform === 'linkedin') return 'border-blue-500/50 text-blue-400';
     if (platform === 'github') return 'border-zinc-400/50 text-zinc-200';
@@ -109,8 +45,53 @@ const Testimonials = () => {
     return 'border-white/20 text-white/70';
   };
 
+  // CMS-backed guestbook list (Phase 3 fundamental)
+  const [guestbookItems, setGuestbookItems] = useState([]);
+  const [loadingGuestbook, setLoadingGuestbook] = useState(true);
+  const [guestbookError, setGuestbookError] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+
+    async function run() {
+      try {
+        setLoadingGuestbook(true);
+        setGuestbookError('');
+
+        const res = await fetch('/api/testimonials', { cache: 'no-store' });
+        const data = await res.json();
+
+        if (!alive) return;
+
+        if (data?.ok && Array.isArray(data?.items)) {
+          setGuestbookItems(data.items);
+        } else {
+          setGuestbookItems([]);
+          setGuestbookError(data?.error || 'Failed to load testimonials');
+        }
+      } catch (e) {
+        if (!alive) return;
+        setGuestbookItems([]);
+        setGuestbookError(e?.message || 'Failed to load testimonials');
+      } finally {
+        if (!alive) return;
+        setLoadingGuestbook(false);
+      }
+    }
+
+    run();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Phase 3: show 4 visible cards (same as your previous slice)
+  const visibleGuestbook = useMemo(() => {
+    return Array.isArray(guestbookItems) ? guestbookItems.slice(0, 4) : [];
+  }, [guestbookItems]);
+
   return (
-    <div className="bg-bg text-text skeleton-section">
+    <div className="bg-bg text-text skeleton-section" id="testimonials">
       <div className="mx-auto max-w-[95vw] p-8">
         {/* Page title */}
         <header className="text-center">
@@ -209,7 +190,13 @@ const Testimonials = () => {
                       className={`px-3 py-1 text-xs border rounded-full skeleton-chip ${providerPillClass}`}
                     >
                       Connected via {providerLabel}
-                      {authMode === 'linkedin' ? ' in' : authMode === 'github' ? ' gh' : authMode === 'google' ? ' G' : ''}
+                      {authMode === 'linkedin'
+                        ? ' in'
+                        : authMode === 'github'
+                          ? ' gh'
+                          : authMode === 'google'
+                            ? ' G'
+                            : ''}
                     </span>
 
                     <button
@@ -246,7 +233,10 @@ const Testimonials = () => {
                     <div>
                       <label className="block text-sm font-semibold mb-2">
                         Website
-                        <span className="opacity-60 font-normal"> (optional)</span>
+                        <span className="opacity-60 font-normal">
+                          {' '}
+                          (optional)
+                        </span>
                       </label>
                       <input
                         className="w-full px-4 py-3 border rounded-xl skeleton-box bg-transparent"
@@ -280,7 +270,10 @@ const Testimonials = () => {
                     <div>
                       <label className="block text-sm font-semibold mb-2">
                         Picture
-                        <span className="opacity-60 font-normal"> (optional)</span>
+                        <span className="opacity-60 font-normal">
+                          {' '}
+                          (optional)
+                        </span>
                       </label>
                       <input
                         className="w-full px-4 py-3 border rounded-xl skeleton-box bg-transparent"
@@ -313,19 +306,31 @@ const Testimonials = () => {
             </div>
           </section>
 
-          {/* RIGHT HALF: Testimonials list (concept auto-scroll) */}
+          {/* RIGHT HALF: Guestbook list (CMS-backed) */}
           <section className="border rounded-2xl skeleton-box p-8">
             <header className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Guestbook</h2>
               <p className="text-xs opacity-70">
-                Auto-scrolling carousel (concept only)
+                CMS-backed list (Phase 3)
               </p>
             </header>
 
-            {/* Vertical scrolling container (concept): show 4 visible cards */}
+            {/* Load state */}
+            {(loadingGuestbook || guestbookError) && (
+              <div className="mt-6 text-xs opacity-70 border rounded-xl skeleton-box p-4">
+                {loadingGuestbook
+                  ? 'Loading testimonials…'
+                  : `Failed to load testimonials: ${guestbookError}`}
+              </div>
+            )}
+
+            {/* Vertical container: show 4 visible cards */}
             <div className="mt-6 flex flex-col gap-4 max-h-[520px] overflow-hidden">
-              {testimonialExamples.slice(0, 4).map((t) => (
-                <article key={t.id} className="border rounded-2xl skeleton-box p-5">
+              {visibleGuestbook.map((t) => (
+                <article
+                  key={t.id}
+                  className="border rounded-2xl skeleton-box p-5"
+                >
                   {/* Profile row */}
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 border rounded-full skeleton-box overflow-hidden flex items-center justify-center">
@@ -348,9 +353,7 @@ const Testimonials = () => {
                         </span>
                       </div>
 
-                      <p className="text-xs opacity-70 truncate">
-                        {t.website}
-                      </p>
+                      <p className="text-xs opacity-70 truncate">{t.website}</p>
                     </div>
                   </div>
 
@@ -365,9 +368,10 @@ const Testimonials = () => {
               ))}
             </div>
 
-            {/* Visible note about auto-scroll (no logic) */}
+            {/* Phase note */}
             <div className="mt-6 text-xs opacity-70 border rounded-xl skeleton-box p-4">
-              Vertical auto-scroll carousel planned (infinite loop effect). Phase 2 shows static example cards only.
+              Auto-scroll + submissions are deferred to Phase 4. Phase 3 is CMS
+              read-only wiring.
             </div>
           </section>
         </main>
