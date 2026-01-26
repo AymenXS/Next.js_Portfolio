@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
  * DATA (Filled from INFO DEPTH)
  * Keep the existing component behavior (carousel + modal + hover concept/tech).
  */
-const fallbackProjects = [
+const projects = [
   {
     id: 1,
     category: 'E-COMMERCE PLATFORM',
@@ -207,10 +207,10 @@ const TechPill = ({ concept, tech, isHovered, onEnter, onLeave }) => {
 };
 
 const Projects = () => {
-  // Data (CMS-first; fallback to local seed if API is empty/unavailable)
-  const [projects, setProjects] = useState(fallbackProjects);
+  // CMS data (Phase 3 fundamentals): fetch once, keep fallback
+  const [items, setItems] = useState(projects);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const [loadError, setLoadError] = useState(null);
 
   // Carousel state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -222,47 +222,79 @@ const Projects = () => {
   const [hoveredPillIndex, setHoveredPillIndex] = useState(null);
   const [hoveredModalConceptIndex, setHoveredModalConceptIndex] = useState(null);
 
-useEffect(() => {
-  let isMounted = true;
 
-  const run = async () => {
-    try {
-      setIsLoading(true);
-      setLoadError('');
+  // Fetch CMS data once on mount (fallback to static data if unavailable)
+  useEffect(() => {
+    let isMounted = true;
 
-      const res = await fetch('/api/projects');
-      const json = await res.json().catch(() => null);
+    async function run() {
+      try {
+        setIsLoading(true);
+        setLoadError(null);
 
-      if (!isMounted) return;
+        const res = await fetch('/api/projects', { cache: 'no-store' });
+        const json = await res.json().catch(() => null);
 
-      if (!res.ok || !json?.ok) {
-        setLoadError(json?.error || 'Failed to load projects');
-        return;
+        if (!isMounted) return;
+
+        if (!res.ok || !json?.ok) {
+          throw new Error(json?.error || `Request failed (${res.status})`);
+        }
+
+        const mapped = Array.isArray(json.items) ? json.items.map((p, i) => ({
+          // Prefer CMS id, fallback to index-based id for stable keys
+          id: p.id || i,
+          title: p.title || '',
+          subtitle: p.subtitle || '',
+          // Keep compatibility with the existing UI naming
+          miniDescription: p.cardMiniDescription || '',
+          keyFeatures: Array.isArray(p.keyFeatures) ? p.keyFeatures : [],
+          // Existing hover pill logic expects concept/tech pairs
+          techStack: Array.isArray(p.techConcepts) ? p.techConcepts : [],
+          modalTitle: p.modalTitle || '',
+          modalMiniDescription: p.modalDescription || '',
+          liveDemoUrl: p.liveUrl || '',
+          problem: p.problem || '',
+          answer: p.answer || '',
+          visualDesign: Array.isArray(p.visualDesign) ? p.visualDesign : [],
+          architecture: Array.isArray(p.architecture) ? p.architecture : [],
+          standoutSections: Array.isArray(p.standoutSections) ? p.standoutSections : [],
+          metrics: p.metrics || {},
+          extraMetrics: p.extraMetrics || {},
+          // Media (optional, legacy kept)
+          pictures: Array.isArray(p.pictures) ? p.pictures : [],
+          featured: Boolean(p.featured),
+          startDate: p.startDate || null,
+          endDate: p.endDate || null,
+          slug: p.slug || '',
+        })) : [];
+
+        if (mapped.length) {
+          setItems(mapped);
+          // Clamp index to new bounds
+          setCurrentIndex((idx) => Math.max(0, Math.min(idx, mapped.length - 1)));
+        }
+      } catch (e) {
+        if (!isMounted) return;
+        setLoadError(e?.message || 'Failed to load projects');
+      } finally {
+        if (!isMounted) return;
+        setIsLoading(false);
       }
-
-      const items = Array.isArray(json?.items) ? json.items : [];
-      if (items.length) {
-        setProjects(items);
-        setCurrentIndex(0);
-      }
-    } catch (err) {
-      if (!isMounted) return;
-      setLoadError(err?.message || 'Failed to load projects');
-    } finally {
-      if (!isMounted) return;
-      setIsLoading(false);
     }
-  };
 
-  run();
+    run();
 
-  return () => {
-    isMounted = false;
-  };
-}, []);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
+  const data = Array.isArray(items) && items.length ? items : projects;
 
-  const currentProject = projects[currentIndex] || {};
+  const currentProject = data[currentIndex];
+
+  if (!currentProject) return null;
 
   const onPrev = () => {
     if (currentIndex === 0) return;
@@ -270,7 +302,7 @@ useEffect(() => {
   };
 
   const onNext = () => {
-    if (currentIndex === projects.length - 1) return;
+    if (currentIndex === data.length - 1) return;
     setCurrentIndex((i) => i + 1);
   };
 
@@ -289,15 +321,13 @@ useEffect(() => {
           <p className="mt-2 text-sm opacity-70">
             Explore my recent work and case studies
           </p>
+
+          {(isLoading || loadError) && (
+            <p className="mt-2 text-xs opacity-70">
+              {isLoading ? 'Loading projects from CMS…' : `CMS unavailable — showing fallback data (${loadError})`}
+            </p>
+          )}
         </header>
-
-        {/* Data Status (Phase 3) */}
-        {(isLoading || loadError) && (
-          <p className="mt-4 text-center text-sm opacity-70">
-            {isLoading ? 'Loading projects…' : `Projects load issue: ${loadError} (showing fallback)`}
-          </p>
-        )}
-
 
         {/* Carousel Section (relative so modal overlay covers ONLY this section) */}
         <section className="relative mt-10 border rounded-2xl skeleton-box p-8">
@@ -307,7 +337,7 @@ useEffect(() => {
             <div className="lg:col-span-2">
               {/* Category + Title */}
               <p className="text-sm uppercase tracking-widest opacity-70">
-                {currentProject.category}
+                {currentProject.subtitle || currentProject.category}
               </p>
               <h2 className="mt-3 text-5xl font-extrabold">
                 {currentProject.title}
@@ -385,7 +415,7 @@ useEffect(() => {
                 );
               })}
               <span className="ml-2 text-xs opacity-70">
-                {currentIndex + 1} of {projects.length}
+                {currentIndex + 1} of {data.length}
               </span>
             </div>
 
@@ -394,7 +424,7 @@ useEffect(() => {
               type="button"
               className="w-12 h-12 border rounded-full skeleton-box disabled:opacity-40"
               onClick={onNext}
-              disabled={currentIndex === projects.length - 1}
+              disabled={currentIndex === data.length - 1}
               aria-label="Next project"
             >
               ›

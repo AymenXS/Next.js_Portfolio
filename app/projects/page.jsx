@@ -5,91 +5,93 @@ import { useEffect, useState } from 'react';
 export default function ProjectsPage() {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
+    let alive = true;
 
-    const run = async () => {
+    async function run() {
       try {
         setIsLoading(true);
-        setLoadError('');
+        setLoadError(null);
 
-        const res = await fetch('/api/projects');
+        const res = await fetch('/api/projects', { cache: 'no-store' });
         const json = await res.json().catch(() => null);
 
-        if (!isMounted) return;
+        if (!alive) return;
 
         if (!res.ok || !json?.ok) {
-          setLoadError(json?.error || 'Failed to load projects');
-          return;
+          throw new Error(json?.error || `Request failed (${res.status})`);
         }
 
-        setItems(Array.isArray(json?.items) ? json.items : []);
-      } catch (err) {
-        if (!isMounted) return;
-        setLoadError(err?.message || 'Failed to load projects');
+        setItems(Array.isArray(json.items) ? json.items : []);
+      } catch (e) {
+        if (!alive) return;
+        setLoadError(e?.message || 'Failed to load projects');
       } finally {
-        if (!isMounted) return;
+        if (!alive) return;
         setIsLoading(false);
       }
-    };
+    }
 
     run();
 
     return () => {
-      isMounted = false;
+      alive = false;
     };
   }, []);
 
   return (
-    <main className="min-h-screen bg-bg text-text">
-      <div className="mx-auto max-w-5xl p-8">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-bold">All Projects</h1>
-            <p className="mt-2 text-sm opacity-70">
-              Minimal list view (Phase 3). Detailed UI deferred.
-            </p>
-          </div>
-
-          <a className="px-4 py-2 border rounded-lg" href="/">
-            Back to Home
-          </a>
-        </div>
-
-        {(isLoading || loadError) && (
-          <p className="mt-6 text-sm opacity-70">
-            {isLoading ? 'Loading…' : `Load issue: ${loadError}`}
-          </p>
-        )}
-
-        {!isLoading && !loadError && (
-          <div className="mt-8 grid gap-4">
-            {items.map((p) => (
-              <article key={p.id} className="border rounded-2xl p-5">
-                <p className="text-xs uppercase tracking-widest opacity-70">
-                  {p.category}
-                </p>
-                <h2 className="mt-2 text-2xl font-bold">{p.title}</h2>
-                <p className="mt-2 text-sm opacity-80">{p.miniDescription}</p>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {(p.techStack || []).slice(0, 6).map((t, idx) => (
-                    <span key={idx} className="px-3 py-1 text-xs border rounded-full">
-                      {t.concept}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-
-            {!items.length && (
-              <p className="text-sm opacity-70">No projects found.</p>
-            )}
-          </div>
-        )}
+    <main className="mx-auto max-w-5xl p-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Projects</h1>
+        <a href="/" className="text-sm underline opacity-80">
+          Back to Home
+        </a>
       </div>
+
+      <p className="mt-2 text-sm opacity-70">
+        A simple list view (Phase 3 fundamentals). Detailed UI remains on the home page carousel.
+      </p>
+
+      {(isLoading || loadError) && (
+        <p className="mt-4 text-xs opacity-70">
+          {isLoading ? 'Loading projects from CMS…' : `Failed to load projects (${loadError})`}
+        </p>
+      )}
+
+      {!isLoading && !loadError && items.length === 0 ? (
+        <p className="mt-8 text-sm opacity-70">No projects found.</p>
+      ) : (
+        <ul className="mt-8 space-y-4">
+          {items.map((p) => (
+            <li key={p.id} className="border rounded-2xl p-4 skeleton-box">
+              <div className="text-xs uppercase tracking-widest opacity-70">{p.subtitle}</div>
+              <div className="mt-2 text-xl font-bold">{p.title}</div>
+              {p.cardMiniDescription && (
+                <p className="mt-2 text-sm opacity-80">{p.cardMiniDescription}</p>
+              )}
+              <div className="mt-3 flex flex-wrap gap-2 text-xs opacity-80">
+                {(p.techConcepts || []).slice(0, 4).map((t, idx) => (
+                  <span key={idx} className="border rounded-full px-2 py-1">
+                    {t.concept}: {t.tech}
+                  </span>
+                ))}
+              </div>
+              {p.liveUrl && (
+                <a
+                  href={p.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block text-sm underline"
+                >
+                  Live demo
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
