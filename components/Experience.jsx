@@ -1,62 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-
-const FALLBACK_EXPERIENCES = [
-  {
-    id: 'fallback-1',
-    jobTitle: 'Freelance Full-Stack Developer',
-    company: 'Self-Employed',
-    location: 'Remote Worldwide',
-    locationMode: 'Remote',
-    startDate: '2022-01-01T00:00:00.000Z',
-    endDate: null,
-    techGroups: [
-      { label: 'Frontend', items: ['Next.js', 'React', 'Tailwind CSS'] },
-      { label: 'Backend', items: ['Node.js', 'Express'] },
-      { label: 'Database', items: ['PostgreSQL', 'Redis'] },
-      { label: 'AI/Automation', items: ['OpenAI API'] },
-      { label: 'Tools', items: ['Git', 'Docker'] },
-    ],
-    tasks: [
-      {
-        title: 'Key Highlights',
-        descriptions: [
-          'Architected a full-stack platform with AI recommendations → increased conversion by 35%, serving 10,000+ monthly users',
-          'Automated invoice generation and email workflows → reduced manual work by 80%, saving 15 hours/week',
-          'Integrated OpenAI-powered search and chatbot functionality → improved engagement by 40%, processing 500+ queries daily',
-          'Optimized database queries and caching → decreased page load time by 60% (3.0s → 1.2s)',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'fallback-2',
-    jobTitle: 'Web Developer Intern',
-    company: 'Digital Agency',
-    location: 'Casablanca, Morocco',
-    locationMode: 'Hybrid',
-    startDate: '2021-06-01T00:00:00.000Z',
-    endDate: '2021-12-01T00:00:00.000Z',
-    techGroups: [
-      { label: 'Frontend', items: ['HTML', 'CSS', 'JavaScript'] },
-      { label: 'Backend', items: ['PHP', 'Laravel'] },
-      { label: 'Database', items: ['MySQL'] },
-      { label: 'Tools', items: ['Git', 'WordPress'] },
-    ],
-    tasks: [
-      'Developed client websites using WordPress and custom themes → delivered on time with high client approval',
-      'Collaborated with design team to implement responsive layouts → ensured mobile-first UX',
-      'Maintained and updated existing client sites → resolved bugs with fast turnaround',
-    ],
-  },
-];
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 function formatFullDate(iso) {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
-  return new Intl.DateTimeFormat(undefined, { month: 'long', day: 'numeric', year: 'numeric' }).format(d);
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(d);
 }
 
 function formatDateRange(startIso, endIso) {
@@ -68,48 +22,137 @@ function formatDateRange(startIso, endIso) {
   return `${start} - ${end}`;
 }
 
+function sanitizeExperience(raw) {
+  const safe = raw && typeof raw === 'object' ? raw : {};
+
+  const id = typeof safe.id === 'string' ? safe.id : null;
+
+  const jobTitle = typeof safe.jobTitle === 'string' ? safe.jobTitle : '';
+  const company = typeof safe.company === 'string' ? safe.company : '';
+  const location = typeof safe.location === 'string' ? safe.location : '';
+  const locationMode = typeof safe.locationMode === 'string' ? safe.locationMode : '';
+
+  const startDate = typeof safe.startDate === 'string' ? safe.startDate : null;
+  const endDate = typeof safe.endDate === 'string' ? safe.endDate : null;
+
+  const techGroupsRaw = Array.isArray(safe.techGroups) ? safe.techGroups : [];
+  const techGroups = techGroupsRaw
+    .filter(Boolean)
+    .map((g) => ({
+      label: typeof g?.label === 'string' ? g.label : '',
+      items: Array.isArray(g?.items) ? g.items.filter((x) => typeof x === 'string' && x.trim()) : [],
+    }))
+    .filter((g) => g.label && g.items.length);
+
+  const tasksRaw = Array.isArray(safe.tasks) ? safe.tasks : [];
+  const tasks = tasksRaw
+    .filter(Boolean)
+    .map((t) => {
+      if (typeof t === 'string') return t.trim();
+      const title = typeof t?.title === 'string' ? t.title.trim() : '';
+      const descriptions = Array.isArray(t?.descriptions)
+        ? t.descriptions.filter((d) => typeof d === 'string' && d.trim())
+        : [];
+      return { title, descriptions };
+    })
+    .filter((t) => (typeof t === 'string' ? t : t.title || t.descriptions?.length));
+
+  // Minimum contract: must have id and at least a title/company/date to be meaningful
+  const hasMeaning =
+    id &&
+    (jobTitle || company || startDate || endDate || location || locationMode || techGroups.length || tasks.length);
+
+  if (!hasMeaning) return null;
+
+  return {
+    id,
+    jobTitle,
+    company,
+    location,
+    locationMode,
+    startDate,
+    endDate,
+    techGroups,
+    tasks,
+  };
+}
+
 const Experience = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [flipped, setFlipped] = useState(false);
 
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loadState, setLoadState] = useState({ loading: true, error: null });
 
-  useEffect(() => {
-    let cancelled = false;
+  const [loadState, setLoadState] = useState({
+    loading: true,
+    error: null,
+  });
 
-    async function run() {
+  const abortRef = useRef(null);
+
+  const fetchExperiences = useCallback(async () => {
+    // Cancel previous request if any
+    if (abortRef.current) {
       try {
-        const res = await fetch('/api/experience', { method: 'GET' });
-        const data = await res.json().catch(() => null);
-
-        if (!res.ok || !data?.ok) {
-          throw new Error(data?.error || `Request failed (${res.status})`);
-        }
-
-        const list = Array.isArray(data.items) ? data.items : [];
-        if (!cancelled) {
-          setItems(list.length ? list : FALLBACK_EXPERIENCES);
-          setActiveIndex(0);
-          setLoadState({ loading: false, error: null });
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setItems(FALLBACK_EXPERIENCES);
-          setActiveIndex(0);
-          setLoadState({ loading: false, error: err?.message || 'Failed to load experiences' });
-        }
-      }
+        abortRef.current.abort();
+      } catch { }
     }
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    run();
-    return () => {
-      cancelled = true;
-    };
+    setLoadState({ loading: true, error: null });
+
+    try {
+      const res = await fetch('/api/experience', {
+        method: 'GET',
+        signal: controller.signal,
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error || `Request failed (${res.status})`);
+      }
+
+      const listRaw = Array.isArray(data.items) ? data.items : [];
+      const list = listRaw.map(sanitizeExperience).filter(Boolean);
+
+      setItems(list);
+      setActiveIndex(0);
+      setLoadState({ loading: false, error: null });
+    } catch (err) {
+      // If aborted, ignore
+      if (err?.name === 'AbortError') return;
+
+      setItems([]);
+      setActiveIndex(0);
+      setLoadState({
+        loading: false,
+        error: err?.message || 'Failed to load experiences',
+      });
+    }
   }, []);
 
-  const experiences = items.length ? items : FALLBACK_EXPERIENCES;
+  useEffect(() => {
+    fetchExperiences();
+    return () => {
+      if (abortRef.current) {
+        try {
+          abortRef.current.abort();
+        } catch { }
+      }
+    };
+  }, [fetchExperiences]);
+
+  const experiences = items; // ✅ No fake fallback in Phase 4
+
+  // Keep index valid when list changes
+  useEffect(() => {
+    if (activeIndex >= experiences.length) {
+      setActiveIndex(0);
+    }
+  }, [experiences.length, activeIndex]);
 
   const active = experiences[activeIndex] || null;
 
@@ -121,8 +164,34 @@ const Experience = () => {
     return formatDateRange(active.startDate, active.endDate);
   }, [active]);
 
+  const onKeyDown = useCallback(
+    (e) => {
+      // Modal escape
+      if (e.key === 'Escape' && isOpen) {
+        e.preventDefault();
+        setIsOpen(false);
+        return;
+      }
+
+      // Carousel navigation
+      if (e.key === 'ArrowLeft' && canPrev) {
+        e.preventDefault();
+        setActiveIndex((i) => Math.max(0, i - 1));
+      }
+      if (e.key === 'ArrowRight' && canNext) {
+        e.preventDefault();
+        setActiveIndex((i) => Math.min(experiences.length - 1, i + 1));
+      }
+    },
+    [isOpen, canPrev, canNext, experiences.length]
+  );
+
   return (
-    <div className="relative p-8 w-full min-h-screen bg-bg text-text skeleton-section">
+    <div
+      className="relative p-8 w-full min-h-screen bg-bg text-text skeleton-section"
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+    >
       {/* Split: simple 20 / 80 */}
       <main className="mx-auto flex gap-8">
         {/* LEFT (20%) */}
@@ -155,7 +224,6 @@ const Experience = () => {
                   >
                     <div className="w-full">
                       <div className="mx-auto size-24 rounded-full border skeleton-box overflow-hidden flex items-center justify-center">
-                        {/* Replace with real image when available */}
                         <span className="text-xs opacity-60">aymen-profile.jpg</span>
                       </div>
 
@@ -197,19 +265,7 @@ const Experience = () => {
                           <span className="font-semibold">Key Metrics:</span> 98% Client Satisfaction • 20+ Clients Worldwide
                         </li>
                         <li>
-                          <span className="font-semibold">Technologies:</span> 12+ Core Technologies
-                        </li>
-                        <li>
-                          <span className="font-semibold">Different:</span> I combine deep technical execution with business thinking and AI-driven automation
-                        </li>
-                        <li>
-                          <span className="font-semibold">Approach:</span> Systems-first development with AI augmentation
-                        </li>
-                        <li>
-                          <span className="font-semibold">Problems:</span> Turn complex manual processes into simple, automated user experiences
-                        </li>
-                        <li>
-                          <span className="font-semibold">Serve:</span> Startups and SMBs scaling their digital presence without enterprise-level budgets
+                          <span className="font-semibold">Different:</span> Technical execution + business thinking + AI automation
                         </li>
                       </ul>
                     </div>
@@ -224,7 +280,7 @@ const Experience = () => {
                   </div>
                 </div>
 
-                {/* HUD FLOATERS (simple offsets) */}
+                {/* HUD FLOATERS */}
                 <span className="absolute -top-3 left-4 px-3 py-1 text-xs border rounded-full skeleton-chip">Available</span>
                 <span className="absolute top-4 -right-3 px-3 py-1 text-xs border rounded-full skeleton-chip">Remote Worldwide</span>
                 <span className="absolute -bottom-3 left-6 px-3 py-1 text-xs border rounded-full skeleton-chip">UTC-5 → UTC+1</span>
@@ -239,11 +295,15 @@ const Experience = () => {
           <article className="p-6 border rounded-2xl skeleton-box">
             <header className="flex items-start justify-between gap-6">
               <div>
-                <h3 className="text-2xl font-bold underline underline-offset-8">Professional Experiences</h3>
+                <h3 className="text-2xl font-bold underline underline-offset-8">
+                  Professional Experiences
+                </h3>
               </div>
 
               <div className="flex-1 text-center">
-                <p className="text-sm opacity-70">{dateRange}</p>
+                <p className="text-sm opacity-70">
+                  {loadState.loading ? 'Loading…' : dateRange}
+                </p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -268,8 +328,35 @@ const Experience = () => {
               </div>
             </header>
 
-            {/* Meta row */}
-            {active && (
+            {/* ✅ Loading */}
+            {loadState.loading && (
+              <p className="mt-6 text-sm opacity-70">Loading experiences…</p>
+            )}
+
+            {/* ✅ Error (actionable) */}
+            {!loadState.loading && loadState.error && (
+              <div className="mt-6 p-4 border rounded-xl">
+                <p className="text-sm font-semibold">Failed to load experiences.</p>
+                <p className="mt-1 text-xs opacity-70">{loadState.error}</p>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 border rounded-xl"
+                    onClick={fetchExperiences}
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ✅ Empty (honest) */}
+            {!loadState.loading && !loadState.error && experiences.length === 0 && (
+              <p className="mt-6 text-sm opacity-70">No experiences found.</p>
+            )}
+
+            {/* ✅ Success */}
+            {!loadState.loading && !loadState.error && active && (
               <>
                 <div className="mt-6 flex items-start justify-between gap-6">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -283,7 +370,7 @@ const Experience = () => {
                   </div>
                 </div>
 
-                {/* Tech Groups (hover reveals items) */}
+                {/* Tech Groups */}
                 <div className="mt-4 flex flex-wrap gap-2">
                   {(active.techGroups || []).map((g) => (
                     <span
@@ -299,8 +386,9 @@ const Experience = () => {
                 </div>
 
                 {/* Tasks */}
-                {Array.isArray(active.tasks) && active.tasks.length > 0 && typeof active.tasks[0] === 'string' ? (
-                  /* Back-compat: plain bullet strings */
+                {Array.isArray(active.tasks) &&
+                  active.tasks.length > 0 &&
+                  typeof active.tasks[0] === 'string' ? (
                   <ol className="mt-6 space-y-3 text-sm opacity-80">
                     {(active.tasks || []).map((t, idx) => (
                       <li key={`${active.id}-t-${idx}`}>
@@ -310,7 +398,6 @@ const Experience = () => {
                     ))}
                   </ol>
                 ) : (
-                  /* Preferred: titled groups */
                   <div className="mt-6 space-y-6 text-sm opacity-80">
                     {(active.tasks || []).map((block, idx) => (
                       <div key={`${active.id}-tb-${idx}`}>
@@ -331,85 +418,60 @@ const Experience = () => {
                     ))}
                   </div>
                 )}
-
-                {loadState.error && (
-                  <p className="mt-6 text-xs opacity-60">
-                    CMS fallback active: {loadState.error}
-                  </p>
-                )}
               </>
-            )}
-
-            {!active && (
-              <p className="mt-6 text-sm opacity-70">
-                {loadState.loading ? 'Loading experiences…' : 'No experiences found.'}
-              </p>
             )}
           </article>
         </section>
       </main>
 
-      {/* MODAL (absolute + translate, no fixed) */}
+      {/* MODAL */}
       {isOpen && (
         <div className="absolute inset-0 z-50">
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/40" onClick={() => setIsOpen(false)} />
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setIsOpen(false)}
+          />
 
-          {/* Panel centered via translate */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl p-6 border rounded-2xl bg-bg skeleton-box">
+          {/* Panel */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl p-6 border rounded-2xl bg-bg skeleton-box"
+          >
             <header className="flex items-center justify-between">
               <h3 className="font-bold text-lg">FULL PROFILE</h3>
-              <button type="button" className="px-3 py-1 border rounded-lg" onClick={() => setIsOpen(false)}>
+              <button
+                type="button"
+                className="px-3 py-1 border rounded-lg"
+                onClick={() => setIsOpen(false)}
+              >
                 Close
               </button>
             </header>
 
             <div className="mt-6 grid grid-cols-2 gap-4">
-              {/* Bento 1 */}
               <div className="p-4 border rounded-xl skeleton-box">
                 <p className="text-sm font-bold">Identity &amp; Positioning</p>
                 <div className="mt-3 text-xs opacity-80 space-y-1">
-                  <p>
-                    <span className="font-semibold">Name:</span> Aymen Ghaloua
-                  </p>
-                  <p>
-                    <span className="font-semibold">Picture:</span> aymen-avatar-small.jpg
-                  </p>
-                  <p>
-                    <span className="font-semibold">Primary Role:</span> Full-Stack Developer
-                  </p>
-                  <p>
-                    <span className="font-semibold">Specialization:</span> AI Integration &amp; Automation
-                  </p>
-                  <p>
-                    <span className="font-semibold">Years:</span> 3+ Years
-                  </p>
-                  <p>
-                    <span className="font-semibold">Location:</span> Remote Worldwide
-                  </p>
-                  <p>
-                    <span className="font-semibold">Availability:</span> Available
-                  </p>
+                  <p><span className="font-semibold">Name:</span> Aymen Ghaloua</p>
+                  <p><span className="font-semibold">Primary Role:</span> Full-Stack Developer</p>
+                  <p><span className="font-semibold">Specialization:</span> AI Integration &amp; Automation</p>
+                  <p><span className="font-semibold">Years:</span> 3+ Years</p>
+                  <p><span className="font-semibold">Location:</span> Remote Worldwide</p>
+                  <p><span className="font-semibold">Availability:</span> Available</p>
                 </div>
               </div>
 
-              {/* Bento 2 */}
               <div className="p-4 border rounded-xl skeleton-box">
                 <p className="text-sm font-bold">Value Proposition</p>
                 <div className="mt-3 text-xs opacity-80 space-y-1">
-                  <p>
-                    <span className="font-semibold">Different:</span> Technical execution + business thinking + AI automation
-                  </p>
-                  <p>
-                    <span className="font-semibold">Approach:</span> Systems-first development with AI augmentation
-                  </p>
-                  <p>
-                    <span className="font-semibold">Problems:</span> Automate complex manual workflows into simple UX
-                  </p>
+                  <p><span className="font-semibold">Different:</span> Technical execution + business thinking + AI automation</p>
+                  <p><span className="font-semibold">Approach:</span> Systems-first development with AI augmentation</p>
+                  <p><span className="font-semibold">Problems:</span> Automate complex manual workflows into simple UX</p>
                 </div>
               </div>
 
-              {/* Bento 3 */}
               <div className="p-4 border rounded-xl skeleton-box">
                 <p className="text-sm font-bold">Services</p>
                 <div className="mt-3 text-xs opacity-80 space-y-1">
@@ -420,7 +482,6 @@ const Experience = () => {
                 </div>
               </div>
 
-              {/* Bento 4 */}
               <div className="p-4 border rounded-xl skeleton-box">
                 <p className="text-sm font-bold">Contact</p>
                 <div className="mt-3 text-xs opacity-80 space-y-1">
@@ -433,7 +494,11 @@ const Experience = () => {
             </div>
 
             <div className="mt-6 flex justify-end">
-              <button type="button" className="px-4 py-2 border rounded-xl" onClick={() => setIsOpen(false)}>
+              <button
+                type="button"
+                className="px-4 py-2 border rounded-xl"
+                onClick={() => setIsOpen(false)}
+              >
                 Close
               </button>
             </div>

@@ -2,67 +2,64 @@
 
 import { useMemo, useState } from 'react';
 
-const contactInfo = {
-  email: 'aymenghaloua@gmail.com',
-  location: 'Marrakesh/Safi, Morocco',
-  whatsapp: '+212 621-23-21-83',
-  socials: {
-    github: 'github.com/AymenXS',
-    linkedin: 'linkedin.com/in/ghaloua-aymen',
-  },
-};
-
-// Availability is set by you (hardcoded in Phase 3)
-const availability = 'Available for Projects'; // or "In Project"
+const MAX_FIRST = 60;
+const MAX_LAST = 60;
+const MAX_EMAIL = 254;
+const MAX_MSG = 4000;
 
 const Contact = () => {
-  const whatsappDigits = useMemo(
-    () => contactInfo.whatsapp.replace(/[^\d]/g, ''),
-    []
-  );
-
-  // Phase-3: real submission logic + states
+  // Form fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
+  // Honeypot (bots fill this; humans never see it)
+  const [companyWebsite, setCompanyWebsite] = useState('');
+
+  // UI state
   const [submitting, setSubmitting] = useState(false);
   const [submitOk, setSubmitOk] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const isAvailable = availability.toLowerCase().includes('available');
+  const canSubmit = useMemo(() => {
+    return (
+      firstName.trim().length > 0 &&
+      lastName.trim().length > 0 &&
+      email.trim().length > 0 &&
+      message.trim().length > 0 &&
+      !submitting
+    );
+  }, [firstName, lastName, email, message, submitting]);
 
-  const canSubmit =
-    firstName.trim() && lastName.trim() && email.trim() && message.trim();
-
-  async function handleSubmit(e) {
+  const onSubmit = async (e) => {
     e.preventDefault();
-
-    // reset banners
-    setSubmitOk(false);
-    setSubmitError('');
 
     if (!canSubmit || submitting) return;
 
+    setSubmitting(true);
+    setSubmitOk(false);
+    setSubmitError('');
+
     try {
-      setSubmitting(true);
+      const payload = {
+        first_name: firstName.trim().slice(0, MAX_FIRST),
+        last_name: lastName.trim().slice(0, MAX_LAST),
+        email: email.trim().slice(0, MAX_EMAIL),
+        message: message.trim().slice(0, MAX_MSG),
+        company_website: companyWebsite.trim(), // honeypot
+      };
 
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          email: email.trim(),
-          message: message.trim(),
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => null);
 
       if (!res.ok || !data?.ok) {
-        throw new Error(data?.error || 'Failed to send message.');
+        throw new Error(data?.error || `Request failed (${res.status})`);
       }
 
       setSubmitOk(true);
@@ -70,296 +67,154 @@ const Contact = () => {
       setLastName('');
       setEmail('');
       setMessage('');
+      setCompanyWebsite('');
     } catch (err) {
-      setSubmitError(err?.message || 'Failed to send message.');
+      setSubmitError(err?.message || 'Something went wrong.');
     } finally {
       setSubmitting(false);
     }
-  }
+  };
 
   return (
-    <div className="bg-bg text-text skeleton-section w-full min-h-screen">
-      {/* Full-width, 50/50 split */}
-      <main className="grid grid-cols-1 lg:grid-cols-2 w-full min-h-screen">
-        {/* LEFT HALF */}
-        <section className="p-12 lg:p-16">
-          {/* Title + subtitle link (top-left) */}
-          <header>
-            <h1 className="text-4xl font-bold">Contact Me</h1>
-            <p className="mt-2 text-sm opacity-80">
-              Or reach me via:{' '}
-              <a className="underline" href={`mailto:${contactInfo.email}`}>
-                {contactInfo.email}
-              </a>
+    <div className="bg-bg text-text skeleton-section" id="contact">
+      <div className="mx-auto max-w-[95vw] p-8">
+        <header className="text-center">
+          <h1 className="text-4xl font-bold">Contact</h1>
+          <p className="mt-2 text-sm opacity-70">
+            Real submission pipeline (Phase 3) — hardened in Phase 4
+          </p>
+        </header>
+
+        <main className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Left panel: status */}
+          <section className="border rounded-2xl skeleton-box p-8">
+            <h2 className="text-xl font-bold">Availability</h2>
+            <p className="mt-2 text-sm opacity-80">Available for projects</p>
+            <p className="mt-2 text-xs opacity-70">
+              This status is updated by me (hardcoded for now)
             </p>
-          </header>
 
-          {/* Availability display */}
-          <div className="mt-8 border rounded-2xl skeleton-box p-5">
-            <div className="flex items-center gap-3">
-              <span className="text-xs opacity-70">Current Status</span>
-
-              <span
-                className={[
-                  'px-3 py-1 text-xs rounded-full',
-                  isAvailable
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-amber-500 text-black',
-                ].join(' ')}
-                title={isAvailable ? 'Available for Projects' : 'In Project'}
-              >
-                {availability}
-              </span>
+            <div className="mt-6 text-sm opacity-80 space-y-2">
+              <p>
+                <span className="font-semibold">Location:</span> Remote Worldwide
+              </p>
+              <p>
+                <span className="font-semibold">Languages:</span> EN • FR • AR
+              </p>
+              <p>
+                <span className="font-semibold">Timezone:</span> UTC-5 → UTC+1
+              </p>
             </div>
 
-            <p className="mt-2 text-xs opacity-70">
-              This status is updated by me from the database
+            <div className="mt-6 border rounded-xl skeleton-box p-4 text-xs opacity-70">
+              Note: Anti-spam is Phase 4 minimal (honeypot + limits). IP rate-limit can be added later.
+            </div>
+          </section>
+
+          {/* Right panel: form */}
+          <section className="border rounded-2xl skeleton-box p-8">
+            <h2 className="text-xl font-bold">Send a message</h2>
+            <p className="mt-2 text-sm opacity-70">
+              I’ll get back to you as soon as possible.
             </p>
-          </div>
 
-          {/* Contact Form */}
-          <section className="mt-8 border rounded-2xl skeleton-box p-6">
-            <h2 className="text-lg font-bold">Send a Message</h2>
-
-            {/* Status banner (Phase 3) */}
-            {(submitOk || submitError) && (
-              <div
-                className={[
-                  'mt-4 border rounded-xl skeleton-box p-4 text-sm',
-                  submitOk
-                    ? 'border-emerald-500/40'
-                    : 'border-rose-500/40',
-                ].join(' ')}
-              >
-                {submitOk ? (
-                  <p className="opacity-90">
-                    Message sent. I’ll get back to you soon.
-                  </p>
-                ) : (
-                  <p className="opacity-90">Error: {submitError}</p>
-                )}
+            {/* Banners */}
+            {submitOk && (
+              <div className="mt-6 border rounded-xl skeleton-box p-4 text-sm">
+                ✅ Message sent successfully.
               </div>
             )}
 
-            <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
-              {/* Row 1: First / Last name */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* First Name */}
-                <div className="relative">
+            {submitError && (
+              <div className="mt-6 border rounded-xl skeleton-box p-4 text-sm">
+                ❌ {submitError}
+              </div>
+            )}
+
+            <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+              {/* Honeypot (hidden) */}
+              <input
+                type="text"
+                name="company_website"
+                value={companyWebsite}
+                onChange={(e) => setCompanyWebsite(e.target.value)}
+                autoComplete="off"
+                tabIndex={-1}
+                className="hidden"
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs opacity-70">First name</label>
                   <input
-                    className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box"
-                    placeholder="First Name"
+                    className="w-full px-3 py-2 border rounded-xl bg-transparent outline-none disabled:opacity-40"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    maxLength={MAX_FIRST}
                     required
                     disabled={submitting}
+                    placeholder="Aymen"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
-                    👤
-                  </span>
                 </div>
 
-                {/* Last Name */}
-                <div className="relative">
+                <div className="space-y-1">
+                  <label className="text-xs opacity-70">Last name</label>
                   <input
-                    className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box"
-                    placeholder="Last Name"
+                    className="w-full px-3 py-2 border rounded-xl bg-transparent outline-none disabled:opacity-40"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
+                    maxLength={MAX_LAST}
                     required
                     disabled={submitting}
+                    placeholder="Ghaloua"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
-                    👤
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs opacity-70">Email</label>
+                <input
+                  className="w-full px-3 py-2 border rounded-xl bg-transparent outline-none disabled:opacity-40"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  maxLength={MAX_EMAIL}
+                  required
+                  disabled={submitting}
+                  placeholder="you@example.com"
+                  type="email"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs opacity-70">Message</label>
+                <textarea
+                  className="w-full px-3 py-2 border rounded-xl bg-transparent outline-none min-h-[140px] disabled:opacity-40"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  maxLength={MAX_MSG}
+                  required
+                  disabled={submitting}
+                  placeholder="Tell me what you want to build…"
+                />
+                <div className="text-[11px] opacity-60 flex justify-between">
+                  <span>Min: ~10 chars</span>
+                  <span>
+                    {Math.min(message.length, MAX_MSG)} / {MAX_MSG}
                   </span>
                 </div>
               </div>
 
-              {/* Row 2: Email */}
-              <div className="relative">
-                <input
-                  type="email"
-                  className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={submitting}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm opacity-80">
-                  ✉️
-                </span>
-              </div>
-
-              {/* Row 3: Message */}
-              <div className="relative">
-                <textarea
-                  className="w-full px-4 py-3 pr-12 border rounded-xl bg-transparent skeleton-box min-h-[260px]"
-                  placeholder="Message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                  disabled={submitting}
-                />
-                <span className="absolute right-3 top-4 text-sm opacity-80">
-                  💬
-                </span>
-              </div>
-
-              {/* Submit */}
-              <div className="flex justify-center pt-2">
-                <button
-                  type="submit"
-                  className="px-10 py-3 border rounded-full disabled:opacity-40"
-                  disabled={!canSubmit || submitting}
-                >
-                  {submitting ? 'Sending…' : 'Submit'}
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className="w-full px-4 py-3 border rounded-xl disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {submitting ? 'Sending…' : 'Send Message'}
+              </button>
             </form>
-
-            {/* Visible future note (still true, but now submission exists) */}
-            <p className="mt-4 text-xs opacity-70">
-              Phase 3: submission wired (email delivery + success/error). Phase 4
-              adds spam prevention and storage.
-            </p>
           </section>
-
-          {/* Contact Information */}
-          <section className="mt-8 border rounded-2xl skeleton-box p-6">
-            <h2 className="text-lg font-bold">Contact Information</h2>
-
-            <div className="mt-5 grid gap-3 text-sm">
-              {/* Email */}
-              <div className="flex items-center gap-3">
-                <span className="text-sm opacity-80">✉️</span>
-                <a className="underline" href={`mailto:${contactInfo.email}`}>
-                  {contactInfo.email}
-                </a>
-              </div>
-
-              {/* Location */}
-              <div className="flex items-center gap-3">
-                <span className="text-sm opacity-80">📍</span>
-                <span>{contactInfo.location}</span>
-              </div>
-
-              {/* WhatsApp */}
-              <div className="flex items-center gap-3">
-                <span className="text-sm opacity-80">📱</span>
-                <a
-                  className="underline"
-                  href={`https://wa.me/${whatsappDigits}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contactInfo.whatsapp}
-                </a>
-              </div>
-
-              {/* Socials */}
-              <div className="pt-2">
-                <p className="text-sm font-semibold">Connect with me:</p>
-
-                <div className="mt-2 flex flex-col gap-3">
-                  {/* GitHub */}
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="px-3 py-2 border rounded-xl skeleton-box"
-                      aria-label="GitHub"
-                    >
-                      GitHub
-                    </button>
-                    <a
-                      className="underline"
-                      href={`https://${contactInfo.socials.github}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {contactInfo.socials.github}
-                    </a>
-                  </div>
-
-                  {/* LinkedIn */}
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="px-3 py-2 border rounded-xl skeleton-box"
-                      aria-label="LinkedIn"
-                    >
-                      LinkedIn
-                    </button>
-                    <a
-                      className="underline"
-                      href={`https://${contactInfo.socials.linkedin}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {contactInfo.socials.linkedin}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Future Enhancements (visible blueprint section) */}
-          <section className="mt-8 border border-dashed rounded-2xl skeleton-box p-6 opacity-90">
-            <h2 className="text-lg font-bold">Future Features</h2>
-            <ul className="mt-3 list-disc pl-5 text-sm space-y-1 opacity-80">
-              <li>Service Type selection (dropdown)</li>
-              <li>Collaboration Type (dropdown)</li>
-              <li>Estimated Budget (range selector)</li>
-              <li>AI-powered pre-detailed form for better context gathering</li>
-            </ul>
-            <p className="mt-3 text-xs opacity-70">
-              These features will help streamline the initial conversation and
-              ensure we focus on what matters most.
-            </p>
-          </section>
-        </section>
-
-        {/* RIGHT HALF */}
-        <section className="relative min-h-[60vh] lg:min-h-screen">
-          {/* Curved divider (dashed line) */}
-          <div className="absolute left-0 top-0 bottom-0 w-0 border-l border-dashed opacity-40" />
-
-          {/* Organic shape wrapper */}
-          <div className="relative w-full h-full flex items-center justify-center p-8">
-            {/* Dashed outline extending beyond */}
-            <div
-              className="absolute w-[92%] h-[84%] border border-dashed rounded-[48px] opacity-40"
-              style={{
-                transform: 'translate(10px, -10px)',
-              }}
-            />
-
-            {/* Main organic shape */}
-            <div
-              className="w-[90%] h-[80%] border rounded-[64px] skeleton-box flex items-center justify-center text-center p-8"
-              style={{
-                clipPath:
-                  'polygon(0% 12%, 8% 6%, 22% 2%, 40% 1%, 58% 3%, 74% 8%, 88% 16%, 96% 30%, 99% 48%, 96% 66%, 88% 82%, 74% 92%, 58% 97%, 40% 99%, 22% 98%, 8% 94%, 0% 86%)',
-              }}
-            >
-              <div>
-                <p className="text-lg font-semibold opacity-80">
-                  Image Placeholder
-                </p>
-                <p className="mt-2 text-sm opacity-70">
-                  TODO: Add animated image/AI-generated design
-                </p>
-              </div>
-            </div>
-
-            {/* subtle note about flow/divider */}
-            <div className="absolute left-6 bottom-6 text-xs opacity-60">
-              Curved divider + organic mask (skeleton)
-            </div>
-          </div>
-        </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

@@ -21,13 +21,13 @@ const Introduction = ({ navigateTo }) => {
         </p>
 
         <div className="flex gap-4 mt-4 flex-wrap justify-center">
-          <button
-            className="px-4 py-2 border rounded opacity-60 cursor-not-allowed"
-            disabled
-            type="button"
+          <a
+            className="px-4 py-2 border rounded inline-flex items-center"
+            href="/CV.pdf"
+            download
           >
             Download Resume
-          </button>
+          </a>
 
           <button
             className="px-4 py-2 border rounded"
@@ -45,11 +45,6 @@ const Introduction = ({ navigateTo }) => {
             View Work
           </button>
         </div>
-
-        {/* Deferred note must be visible in UI */}
-        <p className="text-xs opacity-60 mt-2">
-          Resume download — deferred (Phase 4+)
-        </p>
       </div>
     </Section>
   );

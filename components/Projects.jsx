@@ -1,190 +1,73 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 /**
- * DATA (Filled from INFO DEPTH)
- * Keep the existing component behavior (carousel + modal + hover concept/tech).
+ * Phase 4 Rule:
+ * - No fake fallback content
+ * - CMS is source of truth
+ * - Full states: loading / error / empty / success
+ * - Modal: ESC + backdrop + scroll lock
  */
-const projects = [
-  {
-    id: 1,
-    category: 'E-COMMERCE PLATFORM',
-    title: 'SwiftCart',
-    thumbnail: 'project-swiftcart-thumbnail.png',
+
+const isValidExternalUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  const u = url.trim();
+  if (!u) return false;
+  if (u === '#') return false;
+  // Allow https/http only (avoid javascript: etc)
+  return /^https?:\/\/.+/i.test(u);
+};
+
+const normalizeTechStack = (tech) => {
+  if (!Array.isArray(tech)) return [];
+  return tech
+    .map((t) => ({
+      concept: typeof t?.concept === 'string' ? t.concept : '',
+      tech: typeof t?.tech === 'string' ? t.tech : '',
+    }))
+    .filter((t) => t.concept && t.tech);
+};
+
+const normalizeProject = (p, idx) => {
+  const safe = p && typeof p === 'object' ? p : {};
+  const id = safe.id ?? idx;
+
+  return {
+    id,
+    title: typeof safe.title === 'string' ? safe.title : '',
+    subtitle: typeof safe.subtitle === 'string' ? safe.subtitle : '',
     miniDescription:
-      'A modern e-commerce platform featuring AI-powered product recommendations, real-time inventory management, and seamless checkout experience. Built to handle 10,000+ concurrent users with 99.9% uptime. Featuring:',
-    keyFeatures: [
-      'AI-powered product recommendations',
-      'Real-time inventory sync',
-      'One-click checkout with Stripe',
-      'Advanced product filtering',
-    ],
-    // Concept → tech on hover (matches your existing hover pill logic)
-    techStack: [
-      { concept: 'Framework', tech: 'Next.js 14, React 18' },
-      { concept: 'Styling', tech: 'TailwindCSS, Framer Motion' },
-      { concept: 'Backend', tech: 'Node.js, Express, REST API' },
-      { concept: 'Database', tech: 'PostgreSQL, Redis (caching)' },
-      { concept: 'Payment', tech: 'Stripe API' },
-      { concept: 'Deployment', tech: 'Vercel, AWS S3' },
-    ],
-
-    // Modal-specific
-    modalTitle: 'SwiftCart - AI-Powered E-Commerce Platform',
+      typeof safe.cardMiniDescription === 'string'
+        ? safe.cardMiniDescription
+        : typeof safe.miniDescription === 'string'
+          ? safe.miniDescription
+          : '',
+    keyFeatures: Array.isArray(safe.keyFeatures) ? safe.keyFeatures.filter((x) => typeof x === 'string') : [],
+    techStack: normalizeTechStack(safe.techConcepts ?? safe.techStack),
+    modalTitle: typeof safe.modalTitle === 'string' ? safe.modalTitle : '',
     modalMiniDescription:
-      'A scalable e-commerce solution serving 10,000+ monthly users with AI-driven personalization.',
-    liveDemoUrl: '#',
-
-    // Modal sections
-    problem:
-      'Small businesses struggle with managing online inventory across multiple sales channels, leading to overselling and poor customer experience. Traditional e-commerce platforms are either too expensive or lack real-time sync capabilities.',
-    answer:
-      'SwiftCart provides real-time inventory management with automatic syncing across all sales channels, AI-powered stock predictions to prevent overselling, and a user-friendly admin dashboard. The platform scales affordably from startups to mid-size businesses.',
-    visualDesign: [
-      'Modern minimalist design with generous whitespace',
-      'Smooth page transitions (Framer Motion)',
-      'Intuitive product filtering with instant feedback',
-      'Mobile-first responsive layout',
-      '3D product viewer (WebGL) for richer browsing',
-      'One-click checkout to reduce abandonment',
-    ],
-    architecture: [
-      'Microservices architecture (products, orders, payments, inventory)',
-      'RESTful API design with versioning/documentation',
-      'Redis caching layer to reduce DB load and improve response time',
-      'PostgreSQL with indexing for fast product search',
-      'Stripe integration with webhook handling',
-      'Real-time inventory sync via WebSockets',
-    ],
-    standoutSections: [
-      'AI product recommendations',
-      'Abandoned cart recovery emails',
-      'Admin analytics dashboard',
-    ],
-    metrics: { performance: 95, accessibility: 98, bestPractices: 92, seo: 100 },
-    extraMetrics: {
-      pageLoadTime: '1.2s (average)',
-      conversionRate: '+35% improvement',
-    },
-  },
-
-  {
-    id: 2,
-    category: 'AI/LLM SOLUTION',
-    title: 'BotForge',
-    thumbnail: 'project-botforge-thumbnail.png',
-    miniDescription:
-      'A no-code platform for building custom AI chatbots powered by GPT-4 and Claude. Businesses can create, train, and deploy conversational AI without writing code. Featuring:',
-    keyFeatures: [
-      'Drag-and-drop chatbot builder',
-      'Multi-LLM support (GPT-4, Claude)',
-      'Custom knowledge base training',
-      'Analytics dashboard',
-    ],
-    techStack: [
-      { concept: 'Framework', tech: 'Next.js 14, TypeScript' },
-      { concept: 'AI/LLM', tech: 'OpenAI API, Claude API, LangChain' },
-      { concept: 'Backend', tech: 'Python, FastAPI, Celery (async tasks)' },
-      { concept: 'Database', tech: 'MongoDB, Pinecone (vector DB)' },
-      { concept: 'Deployment', tech: 'Docker, AWS ECS, CloudFront' },
-    ],
-
-    modalTitle: 'BotForge - No-Code AI Chatbot Platform',
-    modalMiniDescription:
-      'A no-code interface to create, train, and deploy business chatbots in minutes, with multi-model support and scalable RAG.',
-    liveDemoUrl: '#',
-
-    problem:
-      'Businesses need custom AI chatbots but lack technical expertise and find existing solutions too expensive or inflexible.',
-    answer:
-      'BotForge provides a no-code interface where users build conversation flows, connect data sources, and deploy chatbots quickly. It supports multiple AI models and scales automatically.',
-    visualDesign: [
-      'Drag-and-drop flow builder UI',
-      'Real-time chat preview',
-      'Dark/Light mode support',
-      'Responsive analytics dashboard',
-      'Clean component hierarchy for complex screens',
-      'Fast navigation across builder steps',
-    ],
-    architecture: [
-      'Microservices with FastAPI',
-      'Async task processing with Celery',
-      'Vector embeddings for semantic search',
-      'RAG (Retrieval-Augmented Generation) pipeline',
-      'Rate limiting + caching for cost control',
-      'Observability: logs/metrics for quality monitoring',
-    ],
-    standoutSections: [
-      'Multi-LLM routing (GPT-4 / Claude)',
-      'Knowledge base ingestion + chunking',
-      'Conversation analytics + feedback loops',
-    ],
-    metrics: { performance: 90, accessibility: 96, bestPractices: 93, seo: 98 },
-    extraMetrics: {
-      pageLoadTime: '1.5s (average)',
-      deployments: '500+ chatbots deployed',
-    },
-  },
-
-  {
-    id: 3,
-    category: 'AUTOMATION TOOL',
-    title: 'FlowMate',
-    thumbnail: 'project-flowmate-thumbnail.png',
-    miniDescription:
-      'Workflow automation platform connecting 100+ apps without code. Automate repetitive tasks, sync data across platforms, and save 15+ hours per week. Featuring:',
-    keyFeatures: [
-      'Visual workflow builder',
-      '100+ app integrations',
-      'Scheduled triggers',
-      'Error handling & retry logic',
-    ],
-    techStack: [
-      { concept: 'Framework', tech: 'React, Next.js' },
-      { concept: 'Backend', tech: 'Node.js, Express, Bull (job queue)' },
-      { concept: 'Database', tech: 'MongoDB, Redis' },
-      { concept: 'Integrations', tech: 'Zapier API, REST APIs, Webhooks' },
-      { concept: 'Deployment', tech: 'Vercel, Railway' },
-    ],
-
-    modalTitle: 'FlowMate - Workflow Automation Platform',
-    modalMiniDescription:
-      'A visual automation builder that connects tools, schedules jobs, and handles retries so teams save hours every week.',
-    liveDemoUrl: '#',
-
-    problem:
-      'Teams waste time on repetitive tasks and manual data syncing across tools, causing delays, errors, and inconsistent records.',
-    answer:
-      'FlowMate centralizes automation in one visual builder, adds durable job processing and retries, and connects dozens of integrations through APIs and webhooks.',
-    visualDesign: [
-      'Node-based visual workflow builder',
-      'Clear states for success/failure',
-      'Readable logs and execution history',
-      'Simple templates for common workflows',
-      'Responsive layout for daily use',
-      'Minimal friction for creating automations',
-    ],
-    architecture: [
-      'Durable job queue (Bull) for scheduled + async tasks',
-      'Retry logic + dead-letter handling for failures',
-      'Webhook-based triggers for real-time events',
-      'Redis for queues/caching; MongoDB for config + history',
-      'Secure credential storage patterns (placeholder)',
-      'Extensible integration adapters layer',
-    ],
-    standoutSections: [
-      'Error handling + retry pipeline',
-      'Reusable integration templates',
-      'Execution logs + debugging view',
-    ],
-    metrics: { performance: 92, accessibility: 97, bestPractices: 91, seo: 97 },
-    extraMetrics: {
-      timeSaved: '15+ hours/week (typical team)',
-      integrations: '100+ apps',
-    },
-  },
-];
+      typeof safe.modalDescription === 'string'
+        ? safe.modalDescription
+        : typeof safe.modalMiniDescription === 'string'
+          ? safe.modalMiniDescription
+          : '',
+    liveDemoUrl: typeof safe.liveUrl === 'string' ? safe.liveUrl : (typeof safe.liveDemoUrl === 'string' ? safe.liveDemoUrl : ''),
+    problem: typeof safe.problem === 'string' ? safe.problem : '',
+    answer: typeof safe.answer === 'string' ? safe.answer : '',
+    visualDesign: Array.isArray(safe.visualDesign) ? safe.visualDesign.filter((x) => typeof x === 'string') : [],
+    architecture: Array.isArray(safe.architecture) ? safe.architecture.filter((x) => typeof x === 'string') : [],
+    standoutSections: Array.isArray(safe.standoutSections) ? safe.standoutSections.filter((x) => typeof x === 'string') : [],
+    metrics: safe.metrics && typeof safe.metrics === 'object' ? safe.metrics : {},
+    extraMetrics: safe.extraMetrics && typeof safe.extraMetrics === 'object' ? safe.extraMetrics : {},
+    thumbnail: typeof safe.thumbnail === 'string' ? safe.thumbnail : '',
+    pictures: Array.isArray(safe.pictures) ? safe.pictures : [],
+    featured: Boolean(safe.featured),
+    startDate: safe.startDate ?? null,
+    endDate: safe.endDate ?? null,
+    slug: typeof safe.slug === 'string' ? safe.slug : '',
+  };
+};
 
 /**
  * Reusable Tech Pill
@@ -207,10 +90,9 @@ const TechPill = ({ concept, tech, isHovered, onEnter, onLeave }) => {
 };
 
 const Projects = () => {
-  // CMS data (Phase 3 fundamentals): fetch once, keep fallback
-  const [items, setItems] = useState(projects);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState(null);
+  // ✅ Phase 4: CMS is the truth; start empty
+  const [items, setItems] = useState([]);
+  const [loadState, setLoadState] = useState({ loading: true, error: null });
 
   // Carousel state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -222,89 +104,60 @@ const Projects = () => {
   const [hoveredPillIndex, setHoveredPillIndex] = useState(null);
   const [hoveredModalConceptIndex, setHoveredModalConceptIndex] = useState(null);
 
+  const abortRef = useRef(null);
 
-  // Fetch CMS data once on mount (fallback to static data if unavailable)
-  useEffect(() => {
-    let isMounted = true;
-
-    async function run() {
-      try {
-        setIsLoading(true);
-        setLoadError(null);
-
-        const res = await fetch('/api/projects', { cache: 'no-store' });
-        const json = await res.json().catch(() => null);
-
-        if (!isMounted) return;
-
-        if (!res.ok || !json?.ok) {
-          throw new Error(json?.error || `Request failed (${res.status})`);
-        }
-
-        const mapped = Array.isArray(json.items) ? json.items.map((p, i) => ({
-          // Prefer CMS id, fallback to index-based id for stable keys
-          id: p.id || i,
-          title: p.title || '',
-          subtitle: p.subtitle || '',
-          // Keep compatibility with the existing UI naming
-          miniDescription: p.cardMiniDescription || '',
-          keyFeatures: Array.isArray(p.keyFeatures) ? p.keyFeatures : [],
-          // Existing hover pill logic expects concept/tech pairs
-          techStack: Array.isArray(p.techConcepts) ? p.techConcepts : [],
-          modalTitle: p.modalTitle || '',
-          modalMiniDescription: p.modalDescription || '',
-          liveDemoUrl: p.liveUrl || '',
-          problem: p.problem || '',
-          answer: p.answer || '',
-          visualDesign: Array.isArray(p.visualDesign) ? p.visualDesign : [],
-          architecture: Array.isArray(p.architecture) ? p.architecture : [],
-          standoutSections: Array.isArray(p.standoutSections) ? p.standoutSections : [],
-          metrics: p.metrics || {},
-          extraMetrics: p.extraMetrics || {},
-          // Media (optional, legacy kept)
-          pictures: Array.isArray(p.pictures) ? p.pictures : [],
-          featured: Boolean(p.featured),
-          startDate: p.startDate || null,
-          endDate: p.endDate || null,
-          slug: p.slug || '',
-        })) : [];
-
-        if (mapped.length) {
-          setItems(mapped);
-          // Clamp index to new bounds
-          setCurrentIndex((idx) => Math.max(0, Math.min(idx, mapped.length - 1)));
-        }
-      } catch (e) {
-        if (!isMounted) return;
-        setLoadError(e?.message || 'Failed to load projects');
-      } finally {
-        if (!isMounted) return;
-        setIsLoading(false);
-      }
+  const fetchProjects = useCallback(async () => {
+    // cancel previous
+    if (abortRef.current) {
+      try { abortRef.current.abort(); } catch { }
     }
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    run();
+    setLoadState({ loading: true, error: null });
 
-    return () => {
-      isMounted = false;
-    };
+    try {
+      const res = await fetch('/api/projects', { cache: 'no-store', signal: controller.signal });
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.ok) {
+        throw new Error(json?.error || `Request failed (${res.status})`);
+      }
+
+      const mapped = Array.isArray(json.items) ? json.items.map(normalizeProject) : [];
+
+      setItems(mapped);
+      setCurrentIndex(0);
+      setLoadState({ loading: false, error: null });
+    } catch (e) {
+      if (e?.name === 'AbortError') return;
+      setItems([]);
+      setCurrentIndex(0);
+      setLoadState({ loading: false, error: e?.message || 'Failed to load projects' });
+    }
   }, []);
 
-  const data = Array.isArray(items) && items.length ? items : projects;
+  useEffect(() => {
+    fetchProjects();
+    return () => {
+      if (abortRef.current) {
+        try { abortRef.current.abort(); } catch { }
+      }
+    };
+  }, [fetchProjects]);
 
-  const currentProject = data[currentIndex];
+  // ✅ Keep index valid when items change
+  useEffect(() => {
+    if (currentIndex >= items.length) setCurrentIndex(0);
+  }, [items.length, currentIndex]);
 
-  if (!currentProject) return null;
+  const currentProject = items[currentIndex] || null;
 
-  const onPrev = () => {
-    if (currentIndex === 0) return;
-    setCurrentIndex((i) => i - 1);
-  };
+  const canPrev = currentIndex > 0;
+  const canNext = currentIndex < items.length - 1;
 
-  const onNext = () => {
-    if (currentIndex === data.length - 1) return;
-    setCurrentIndex((i) => i + 1);
-  };
+  const onPrev = () => canPrev && setCurrentIndex((i) => Math.max(0, i - 1));
+  const onNext = () => canNext && setCurrentIndex((i) => Math.min(items.length - 1, i + 1));
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
@@ -312,342 +165,350 @@ const Projects = () => {
     setHoveredModalConceptIndex(null);
   };
 
+  // ✅ Body scroll lock while modal open
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isModalOpen]);
+
+  // ✅ ESC to close modal
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeModal();
+      }
+      // optional carousel keys while modal closed only
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isModalOpen]);
+
+  const liveDemoOk = useMemo(
+    () => (currentProject ? isValidExternalUrl(currentProject.liveDemoUrl) : false),
+    [currentProject]
+  );
+
+  // --------------------
+  // RENDER STATES (Phase 4)
+  // --------------------
+
   return (
     <div className="bg-bg text-text skeleton-section">
       <div className="mx-auto max-w-[90vw] p-8">
-        {/* Page Title */}
         <header className="text-center">
           <h1 className="text-4xl font-bold">Latest Projects</h1>
           <p className="mt-2 text-sm opacity-70">
             Explore my recent work and case studies
           </p>
-
-          {(isLoading || loadError) && (
-            <p className="mt-2 text-xs opacity-70">
-              {isLoading ? 'Loading projects from CMS…' : `CMS unavailable — showing fallback data (${loadError})`}
-            </p>
-          )}
         </header>
 
-        {/* Carousel Section (relative so modal overlay covers ONLY this section) */}
-        <section className="relative mt-10 border rounded-2xl skeleton-box p-8">
-          {/* Layout: Left 40 / Right 60 */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center">
-            {/* Left (~40%) */}
-            <div className="lg:col-span-2">
-              {/* Category + Title */}
-              <p className="text-sm uppercase tracking-widest opacity-70">
-                {currentProject.subtitle || currentProject.category}
-              </p>
-              <h2 className="mt-3 text-5xl font-extrabold">
-                {currentProject.title}
-              </h2>
+        {/* ✅ Loading */}
+        {loadState.loading && (
+          <p className="mt-6 text-sm opacity-70 text-center">Loading projects…</p>
+        )}
 
-              {/* Mini description */}
-              <p className="mt-4 text-sm opacity-80 max-w-xl">
-                {currentProject.miniDescription}
-              </p>
-
-              {/* Key features */}
-              <ul className="mt-4 list-disc pl-5 text-sm space-y-1 opacity-90">
-                {currentProject.keyFeatures.slice(0, 4).map((f, idx) => (
-                  <li key={idx}>{f}</li>
-                ))}
-              </ul>
-
-              {/* Tech Stack Pills */}
-              <div className="mt-6 flex flex-wrap gap-2">
-                {currentProject.techStack.map((t, idx) => (
-                  <TechPill
-                    key={idx}
-                    concept={t.concept}
-                    tech={t.tech}
-                    isHovered={hoveredPillIndex === idx}
-                    onEnter={() => setHoveredPillIndex(idx)}
-                    onLeave={() => setHoveredPillIndex(null)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Right (~60%) */}
-            <div className="lg:col-span-3">
+        {/* ✅ Error (actionable) */}
+        {!loadState.loading && loadState.error && (
+          <div className="mt-10 border rounded-2xl skeleton-box p-6 text-center">
+            <p className="text-sm font-semibold">Failed to load projects.</p>
+            <p className="mt-2 text-xs opacity-70">{loadState.error}</p>
+            <div className="mt-4 flex justify-center">
               <button
                 type="button"
-                className="w-full text-left border rounded-2xl skeleton-box p-4"
-                onClick={openModal}
+                className="px-5 py-2 border rounded-xl skeleton-box"
+                onClick={fetchProjects}
               >
-                <div className="aspect-video border rounded-xl skeleton-box flex items-center justify-center opacity-70">
-                  {currentProject.thumbnail} (16:9) — click to open modal
-                </div>
+                Retry
               </button>
             </div>
           </div>
+        )}
 
-          {/* Navigation Controls */}
-          <div className="mt-12 flex items-center justify-center gap-6">
-            {/* Left Arrow */}
-            <button
-              type="button"
-              className="w-12 h-12 border rounded-full skeleton-box disabled:opacity-40"
-              onClick={onPrev}
-              disabled={currentIndex === 0}
-              aria-label="Previous project"
-            >
-              ‹
-            </button>
+        {/* ✅ Empty (honest) */}
+        {!loadState.loading && !loadState.error && items.length === 0 && (
+          <div className="mt-10 border rounded-2xl skeleton-box p-6 text-center">
+            <p className="text-sm opacity-70">No projects found.</p>
+          </div>
+        )}
 
-            {/* Pagination Dots */}
-            <div className="flex items-center gap-3">
-              {projects.map((p, idx) => {
-                const active = idx === currentIndex;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    className={
-                      'w-3 h-3 rounded-full border ' +
-                      (active ? 'bg-black' : 'bg-transparent opacity-60')
-                    }
-                    onClick={() => setCurrentIndex(idx)}
-                    aria-label={`Go to project ${idx + 1}`}
-                  />
-                );
-              })}
-              <span className="ml-2 text-xs opacity-70">
-                {currentIndex + 1} of {data.length}
-              </span>
+        {/* ✅ Success */}
+        {!loadState.loading && !loadState.error && currentProject && (
+          <section className="relative mt-10 border rounded-2xl skeleton-box p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center">
+              {/* Left */}
+              <div className="lg:col-span-2">
+                <p className="text-sm uppercase tracking-widest opacity-70">
+                  {currentProject.subtitle}
+                </p>
+                <h2 className="mt-3 text-5xl font-extrabold">
+                  {currentProject.title}
+                </h2>
+
+                <p className="mt-4 text-sm opacity-80 max-w-xl">
+                  {currentProject.miniDescription}
+                </p>
+
+                <ul className="mt-4 list-disc pl-5 text-sm space-y-1 opacity-90">
+                  {(currentProject.keyFeatures || []).slice(0, 4).map((f, idx) => (
+                    <li key={idx}>{f}</li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {(currentProject.techStack || []).map((t, idx) => (
+                    <TechPill
+                      key={idx}
+                      concept={t.concept}
+                      tech={t.tech}
+                      isHovered={hoveredPillIndex === idx}
+                      onEnter={() => setHoveredPillIndex(idx)}
+                      onLeave={() => setHoveredPillIndex(null)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="lg:col-span-3">
+                <button
+                  type="button"
+                  className="w-full text-left border rounded-2xl skeleton-box p-4"
+                  onClick={openModal}
+                >
+                  <div className="aspect-video border rounded-xl skeleton-box flex items-center justify-center opacity-70">
+                    {currentProject.thumbnail || 'Project media'} (16:9) — click to open modal
+                  </div>
+                </button>
+              </div>
             </div>
 
-            {/* Right Arrow */}
-            <button
-              type="button"
-              className="w-12 h-12 border rounded-full skeleton-box disabled:opacity-40"
-              onClick={onNext}
-              disabled={currentIndex === data.length - 1}
-              aria-label="Next project"
-            >
-              ›
-            </button>
-          </div>
+            {/* Navigation Controls */}
+            <div className="mt-12 flex items-center justify-center gap-6">
+              <button
+                type="button"
+                className="w-12 h-12 border rounded-full skeleton-box disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={onPrev}
+                disabled={!canPrev}
+                aria-label="Previous project"
+              >
+                ‹
+              </button>
 
-          {/* VIEW ALL PROJECTS Button */}
-          <div className="mt-10 flex justify-center">
-            <a
-              href="/projects"
-              className="px-6 py-3 border rounded-xl skeleton-box"
-            >
-              VIEW ALL PROJECTS
-            </a>
-          </div>
-
-          {/* Project Modal (covers ONLY this Projects section) */}
-          {isModalOpen && (
-            <div className="absolute inset-0 z-50">
-              {/* Backdrop */}
-              <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-
-              {/* Panel */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(1200px,85vw)] border rounded-2xl bg-bg skeleton-box">
-                <div className="max-h-[70vh] overflow-y-auto p-6">
-                  {/* Modal Header */}
-                  <header className="relative">
+              <div className="flex items-center gap-3">
+                {items.map((p, idx) => {
+                  const active = idx === currentIndex;
+                  return (
                     <button
+                      key={p.id ?? idx}
                       type="button"
-                      className="absolute right-0 top-0 px-3 py-1 border rounded-lg"
-                      onClick={closeModal}
-                    >
-                      Close
-                    </button>
+                      className={
+                        'w-3 h-3 rounded-full border ' +
+                        (active ? 'bg-black' : 'bg-transparent opacity-60')
+                      }
+                      onClick={() => setCurrentIndex(idx)}
+                      aria-label={`Go to project ${idx + 1}`}
+                    />
+                  );
+                })}
+                <span className="ml-2 text-xs opacity-70">
+                  {currentIndex + 1} of {items.length}
+                </span>
+              </div>
 
-                    {/* Tech Stack Pills (top row) — concept→tech hover preserved */}
-                    <div className="text-xs opacity-80">
-                      <span className="font-semibold">TECH STACK</span>
-                      <span className="opacity-70"> | </span>
+              <button
+                type="button"
+                className="w-12 h-12 border rounded-full skeleton-box disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={onNext}
+                disabled={!canNext}
+                aria-label="Next project"
+              >
+                ›
+              </button>
+            </div>
 
-                      {currentProject.techStack.map((t, idx) => {
-                        const active = hoveredModalConceptIndex === idx;
-                        return (
-                          <span key={idx}>
-                            <span
-                              className="cursor-default"
-                              onMouseEnter={() => setHoveredModalConceptIndex(idx)}
-                              onMouseLeave={() => setHoveredModalConceptIndex(null)}
-                              style={{ transition: 'opacity 150ms' }}
-                            >
-                              {active ? t.tech.toUpperCase() : t.concept.toUpperCase()}
-                            </span>
-                            {idx < currentProject.techStack.length - 1 ? (
-                              <span className="opacity-60"> • </span>
-                            ) : null}
-                          </span>
-                        );
-                      })}
-                    </div>
+            {/* View all projects (route exists) */}
+            <div className="mt-10 flex justify-center">
+              <a href="/projects" className="px-6 py-3 border rounded-xl skeleton-box">
+                VIEW ALL PROJECTS
+              </a>
+            </div>
 
-                    {/* Title + Description + CTA */}
-                    <div className="mt-4 flex items-start justify-between gap-6">
-                      <div>
-                        <h3 className="text-3xl font-extrabold">
-                          {currentProject.modalTitle || currentProject.title}
-                        </h3>
-                        <p className="mt-2 text-sm opacity-80 max-w-2xl">
-                          {currentProject.modalMiniDescription || currentProject.miniDescription}
-                        </p>
-                      </div>
+            {/* Modal */}
+            {isModalOpen && (
+              <div className="absolute inset-0 z-50">
+                <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
 
-                      <a
-                        href={currentProject.liveDemoUrl || '#'}
-                        className="px-4 py-2 border rounded-xl"
-                        target="_blank"
-                        rel="noreferrer"
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(1200px,85vw)] border rounded-2xl bg-bg skeleton-box">
+                  <div className="max-h-[70vh] overflow-y-auto p-6">
+                    <header className="relative">
+                      <button
+                        type="button"
+                        className="absolute right-0 top-0 px-3 py-1 border rounded-lg"
+                        onClick={closeModal}
                       >
-                        View Live Demo →
-                      </a>
-                    </div>
-                  </header>
+                        Close
+                      </button>
 
-                  {/* Modal Content */}
-                  <div className="mt-8 flex flex-col gap-8">
-                    {/* A. Media */}
-                    <section>
-                      <h4 className="font-bold">Media</h4>
-                      <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div className="border rounded-xl skeleton-box p-4">Screenshot 1</div>
-                        <div className="border rounded-xl skeleton-box p-4">Screenshot 2</div>
-                        <div className="border rounded-xl skeleton-box p-4">Screenshot 3</div>
-                      </div>
-                      <div className="mt-3 border rounded-xl skeleton-box p-6">
-                        Demo Video Placeholder
-                      </div>
-                    </section>
+                      <div className="text-xs opacity-80">
+                        <span className="font-semibold">TECH STACK</span>
+                        <span className="opacity-70"> | </span>
 
-                    {/* B. Real Problem Solved */}
-                    <section>
-                      <h4 className="font-bold">Real Problem Solved</h4>
-                      <p className="mt-3 text-sm opacity-90">
-                        <span className="font-semibold">Problem:</span> {currentProject.problem}
-                      </p>
-                      <p className="mt-3 text-sm opacity-90">
-                        <span className="font-semibold">Answer:</span> {currentProject.answer}
-                      </p>
-                      <p className="mt-3 text-xs opacity-70">
-                        (This leads to the following key features)
-                      </p>
-                    </section>
-
-                    {/* C. Key Features */}
-                    <section>
-                      <h4 className="font-bold">Key Features</h4>
-
-                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="border rounded-xl skeleton-box p-4">
-                          <h5 className="font-semibold">Visual &amp; UX Concepts</h5>
-                          <ul className="mt-2 list-disc pl-5 text-sm space-y-1 opacity-90">
-                            {currentProject.visualDesign.slice(0, 6).map((p, idx) => (
-                              <li key={idx}>{p}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="border rounded-xl skeleton-box p-4">
-                          <h5 className="font-semibold">
-                            Architecture &amp; Technical Implementation
-                          </h5>
-                          <ul className="mt-2 list-disc pl-5 text-sm space-y-1 opacity-90">
-                            {currentProject.architecture.slice(0, 6).map((p, idx) => (
-                              <li key={idx}>{p}</li>
-                            ))}
-                          </ul>
-                        </div>
+                        {(currentProject.techStack || []).map((t, idx) => {
+                          const active = hoveredModalConceptIndex === idx;
+                          return (
+                            <span key={idx}>
+                              <span
+                                className="cursor-default"
+                                onMouseEnter={() => setHoveredModalConceptIndex(idx)}
+                                onMouseLeave={() => setHoveredModalConceptIndex(null)}
+                                style={{ transition: 'opacity 150ms' }}
+                              >
+                                {active ? t.tech.toUpperCase() : t.concept.toUpperCase()}
+                              </span>
+                              {idx < currentProject.techStack.length - 1 ? (
+                                <span className="opacity-60"> • </span>
+                              ) : null}
+                            </span>
+                          );
+                        })}
                       </div>
 
-                      {currentProject.standoutSections?.length ? (
-                        <div className="mt-4 border rounded-xl skeleton-box p-4">
-                          <h5 className="font-semibold">Highlighted Features</h5>
-                          <ul className="mt-2 list-disc pl-5 text-sm space-y-1 opacity-90">
-                            {currentProject.standoutSections.slice(0, 4).map((s, idx) => (
-                              <li key={idx}>{s}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ) : null}
-                    </section>
-
-                    {/* D. Metrics */}
-                    <section>
-                      <h4 className="font-bold">Project Metrics</h4>
-
-                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="border rounded-xl skeleton-box p-4">
-                          <p className="text-sm font-semibold">Performance</p>
-                          <p className="mt-2 text-2xl font-bold">
-                            {currentProject.metrics.performance}
+                      <div className="mt-4 flex items-start justify-between gap-6">
+                        <div>
+                          <h3 className="text-3xl font-extrabold">
+                            {currentProject.modalTitle || currentProject.title}
+                          </h3>
+                          <p className="mt-2 text-sm opacity-80 max-w-2xl">
+                            {currentProject.modalMiniDescription || currentProject.miniDescription}
                           </p>
                         </div>
-                        <div className="border rounded-xl skeleton-box p-4">
-                          <p className="text-sm font-semibold">Accessibility</p>
-                          <p className="mt-2 text-2xl font-bold">
-                            {currentProject.metrics.accessibility}
-                          </p>
-                        </div>
-                        <div className="border rounded-xl skeleton-box p-4">
-                          <p className="text-sm font-semibold">Best Practices</p>
-                          <p className="mt-2 text-2xl font-bold">
-                            {currentProject.metrics.bestPractices}
-                          </p>
-                        </div>
-                        <div className="border rounded-xl skeleton-box p-4">
-                          <p className="text-sm font-semibold">SEO</p>
-                          <p className="mt-2 text-2xl font-bold">{currentProject.metrics.seo}</p>
-                        </div>
-                      </div>
 
-                      {/* Extra metrics from INFO DEPTH */}
-                      {currentProject.extraMetrics ? (
-                        <div className="mt-4 border rounded-xl skeleton-box p-4 text-sm opacity-85">
-                          {Object.entries(currentProject.extraMetrics).map(([k, v]) => (
-                            <p key={k}>
-                              <span className="font-semibold">
-                                {k === 'pageLoadTime'
-                                  ? 'Page Load Time'
-                                  : k === 'conversionRate'
-                                    ? 'Conversion Rate'
-                                    : k === 'deployments'
-                                      ? 'Deployments'
-                                      : k === 'timeSaved'
-                                        ? 'Time Saved'
-                                        : k === 'integrations'
-                                          ? 'Integrations'
-                                          : k}
-                                :
-                              </span>{' '}
-                              {v}
-                            </p>
+                        {/* ✅ Phase 4: hide if absent */}
+                        {liveDemoOk && (
+                          <a
+                            href={currentProject.liveDemoUrl}
+                            className="px-4 py-2 border rounded-xl"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            View Live Demo →
+                          </a>
+                        )}
+                      </div>
+                    </header>
+
+                    <div className="mt-8 flex flex-col gap-8">
+                      <section>
+                        <h4 className="font-bold">Real Problem Solved</h4>
+                        {currentProject.problem ? (
+                          <p className="mt-3 text-sm opacity-90">
+                            <span className="font-semibold">Problem:</span> {currentProject.problem}
+                          </p>
+                        ) : (
+                          <p className="mt-3 text-sm opacity-70">Problem statement not provided.</p>
+                        )}
+
+                        {currentProject.answer ? (
+                          <p className="mt-3 text-sm opacity-90">
+                            <span className="font-semibold">Answer:</span> {currentProject.answer}
+                          </p>
+                        ) : (
+                          <p className="mt-3 text-sm opacity-70">Solution summary not provided.</p>
+                        )}
+                      </section>
+
+                      <section>
+                        <h4 className="font-bold">Key Features</h4>
+
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="border rounded-xl skeleton-box p-4">
+                            <h5 className="font-semibold">Visual &amp; UX Concepts</h5>
+                            <ul className="mt-2 list-disc pl-5 text-sm space-y-1 opacity-90">
+                              {(currentProject.visualDesign || []).slice(0, 6).map((x, idx) => (
+                                <li key={idx}>{x}</li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="border rounded-xl skeleton-box p-4">
+                            <h5 className="font-semibold">Architecture &amp; Technical Implementation</h5>
+                            <ul className="mt-2 list-disc pl-5 text-sm space-y-1 opacity-90">
+                              {(currentProject.architecture || []).slice(0, 6).map((x, idx) => (
+                                <li key={idx}>{x}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        {currentProject.standoutSections?.length ? (
+                          <div className="mt-4 border rounded-xl skeleton-box p-4">
+                            <h5 className="font-semibold">Highlighted Features</h5>
+                            <ul className="mt-2 list-disc pl-5 text-sm space-y-1 opacity-90">
+                              {currentProject.standoutSections.slice(0, 4).map((s, idx) => (
+                                <li key={idx}>{s}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
+                      </section>
+
+                      <section>
+                        <h4 className="font-bold">Project Metrics</h4>
+
+                        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+                          {['performance', 'accessibility', 'bestPractices', 'seo'].map((k) => (
+                            <div key={k} className="border rounded-xl skeleton-box p-4">
+                              <p className="text-sm font-semibold">
+                                {k === 'bestPractices' ? 'Best Practices' : k[0].toUpperCase() + k.slice(1)}
+                              </p>
+                              <p className="mt-2 text-2xl font-bold">
+                                {currentProject.metrics?.[k] ?? '—'}
+                              </p>
+                            </div>
                           ))}
                         </div>
-                      ) : null}
-                    </section>
 
-                    {/* Bottom CTA */}
-                    <footer className="pt-2 pb-2">
-                      <div className="flex justify-center">
-                        <a
-                          href={currentProject.liveDemoUrl || '#'}
-                          className="px-8 py-3 border rounded-xl"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          View Live Demo →
-                        </a>
-                      </div>
-                    </footer>
+                        {currentProject.extraMetrics && Object.keys(currentProject.extraMetrics).length > 0 ? (
+                          <div className="mt-4 border rounded-xl skeleton-box p-4 text-sm opacity-85">
+                            {Object.entries(currentProject.extraMetrics).map(([kk, vv]) => (
+                              <p key={kk}>
+                                <span className="font-semibold">{kk}:</span> {String(vv)}
+                              </p>
+                            ))}
+                          </div>
+                        ) : null}
+                      </section>
+
+                      {/* Bottom CTA (same rule: hide if absent) */}
+                      {liveDemoOk && (
+                        <footer className="pt-2 pb-2">
+                          <div className="flex justify-center">
+                            <a
+                              href={currentProject.liveDemoUrl}
+                              className="px-8 py-3 border rounded-xl"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              View Live Demo →
+                            </a>
+                          </div>
+                        </footer>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </section>
+            )}
+          </section>
+        )}
       </div>
     </div>
   );
