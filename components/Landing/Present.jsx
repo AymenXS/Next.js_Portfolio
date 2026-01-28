@@ -91,7 +91,7 @@ const Present = () => {
           </div>
         </div>
         <p className="text-xs opacity-60">
-          Note: Detailed breakdowns for each capability (Frontend/Backend/etc.) will be added in Phase 3.
+          Note: Detailed breakdowns for each capability (Frontend/Backend/etc.) will be added in Phase 4.
         </p>
 
       </div>

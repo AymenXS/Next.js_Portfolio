@@ -8,7 +8,7 @@ import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 
 const NUM_PAGES = 5;
-const SECTIONS_PER_PAGE = [4];
+const SECTIONS_PER_PAGE = [5];
 
 const Main = () => {
   const { containerRef, slidesRef, currentPage, currentSection, navigateTo } =
